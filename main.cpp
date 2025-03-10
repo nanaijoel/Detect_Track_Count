@@ -225,7 +225,7 @@ int main() {
     std::cout << "Wähle Modus: (1) Image-Detection, (2) Live-Camera: ";
     std::cin >> mode;
 
-    if (mode == 1) image_mode(net, "../");
+    if (mode == 1) image_mode(net, "../images/");
     else if (mode == 2) {
         std::thread camThread(camera_thread, std::ref(net), 0);
         camThread.join();
