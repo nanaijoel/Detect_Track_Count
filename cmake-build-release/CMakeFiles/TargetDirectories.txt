@@ -1,3 +1,0 @@
-C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release/CMakeFiles/Sweets_Tracker_and_Counter.dir
-C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release/CMakeFiles/edit_cache.dir
-C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release/CMakeFiles/rebuild_cache.dir
