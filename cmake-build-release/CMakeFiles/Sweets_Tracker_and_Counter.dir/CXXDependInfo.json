@@ -1,0 +1,21 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "GNU",
+	"compiler-simulate-id" : "",
+	"config" : "Release",
+	"cxx-modules" : {},
+	"dir-cur-bld" : "C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release",
+	"dir-cur-src" : "C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter",
+	"dir-top-bld" : "C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release",
+	"dir-top-src" : "C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"C:\\Users\\j.nanai\\.vcpkg-clion\\vcpkg_heilige_scheisse\\installed\\x64-mingw-dynamic\\include\\opencv4"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "C:/Users/j.nanai/CLionProjects/Sweets_Tracker_and_Counter/cmake-build-release/CMakeFiles/Sweets_Tracker_and_Counter.dir"
+}
