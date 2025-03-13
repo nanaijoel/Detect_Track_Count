@@ -32,7 +32,7 @@ public:
     int next_id = 0;
 
     void update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds);
-    std::vector<Track> get_tracks();
+    std::vector<Track> get_tracks() const;
 
 private:
     void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);

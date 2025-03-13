@@ -34,7 +34,7 @@ void image_mode(DetectAndDraw& detector, const std::string& imgDirectory) {
         std::cout << "Objects found: " << boxes.size() << std::endl;
         if (boxes.empty()) continue;
 
-        detector.draw_detections(image, boxes, classIds);
+        DetectAndDraw::draw_detections(image, boxes, classIds);
 
         cv::resize(image, image, cv::Size(800, 600));
         cv::imshow("YOLO Image Detection", image);

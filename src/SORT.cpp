@@ -24,8 +24,8 @@ SORT::Track::Track(int track_id, cv::Rect bbox, int class_id) {
     kf.measurementNoiseCov = cv::Mat::eye(2, 2, CV_32F) * 1e-1;
     kf.errorCovPost = cv::Mat::eye(4, 4, CV_32F);
 
-    kf.statePost.at<float>(0) = bbox.x + bbox.width / 2;
-    kf.statePost.at<float>(1) = bbox.y + bbox.height / 2;
+    kf.statePost.at<float>(0) = static_cast<float>(bbox.x) + static_cast<float>(bbox.width) / 2.f;
+    kf.statePost.at<float>(1) = static_cast<float>(bbox.y) + static_cast<float>(bbox.height) / 2.f;
 }
 
 
@@ -40,8 +40,8 @@ void SORT::Track::update(cv::Rect new_box) {
 
 void SORT::Track::predict() {
     cv::Mat pred = kf.predict();
-    box.x = pred.at<float>(0) - box.width / 2;
-    box.y = pred.at<float>(1) - box.height / 2;
+    box.x = static_cast<int>(std::round(pred.at<float>(0) - static_cast<float>(box.width) / 2.f));
+    box.y = static_cast<int>(std::round(pred.at<float>(1) - static_cast<float>(box.height) / 2.f));
     frames_since_seen++;
     matched_in_this_frame = false;
 }
@@ -52,13 +52,14 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
         float best_iou = 0;
         int best_match = -1;
 
-        for (size_t i = 0; i < detected_boxes.size(); i++) {
-            float intersection_area = (track.box & detected_boxes[i]).area();
-            float union_area = (track.box.area() + detected_boxes[i].area() - intersection_area);
+        for (int i = 0; i < detected_boxes.size(); i++) {
+            float intersection_area = static_cast<float>((track.box & detected_boxes[i]).area());
+            float union_area = static_cast<float>(track.box.area()) + static_cast<float>(detected_boxes[i].area()) - intersection_area;
             float iou = intersection_area / union_area;
 
-            float dist = std::sqrt(std::pow(track.box.x - detected_boxes[i].x, 2) +
-                                   std::pow(track.box.y - detected_boxes[i].y, 2));
+            float dist = std::sqrt(std::pow(static_cast<float>(track.box.x - detected_boxes[i].x), 2.f) +
+                std::pow(static_cast<float>(track.box.y - detected_boxes[i].y), 2.f));
+
 
             if ((iou > best_iou && iou > 0.4) || (iou > 0.2 && dist < 35)) {
                 best_iou = iou;
@@ -80,8 +81,8 @@ void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std
             bool is_truly_new = true;
 
             for (const auto& track : tracks) {
-                float dist = std::sqrt(std::pow(track.box.x - detected_boxes[i].x, 2) +
-                                       std::pow(track.box.y - detected_boxes[i].y, 2));
+                float dist = std::sqrt(std::pow(static_cast<float>(track.box.x - detected_boxes[i].x), 2.f) +
+                       std::pow(static_cast<float>(track.box.y - detected_boxes[i].y), 2.f));
 
                 if (dist < 50 && track.frames_since_seen < 3) {
                     is_truly_new = false;
@@ -128,7 +129,7 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
     update_counts();
 }
 
-std::vector<SORT::Track> SORT::get_tracks() {
+std::vector<SORT::Track> SORT::get_tracks() const {
     return tracks;
 }
 

@@ -36,7 +36,7 @@ void camera_processing(DetectAndDraw& detector) {
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds);
 
         tracker.update_tracks(boxes, classIds);
-        detector.draw_detections(frame, boxes, classIds);
+        DetectAndDraw::draw_detections(frame, boxes, classIds);
 
         {
             std::lock_guard<std::mutex> lock(count_mutex);
@@ -47,7 +47,7 @@ void camera_processing(DetectAndDraw& detector) {
             }
         }
 
-        cv::Mat info_panel = detector.create_info_panel(frame.rows);
+        cv::Mat info_panel = DetectAndDraw::create_info_panel(frame.rows);
         cv::Mat combined_output;
         cv::hconcat(frame, info_panel, combined_output);
         cv::imshow("Live YOLO SORT Detection", combined_output);
