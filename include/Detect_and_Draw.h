@@ -20,16 +20,15 @@ public:
 
     std::vector<cv::Rect> detect_objects(const cv::Mat& image, std::vector<int>& classIds);
 
-    void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds);
-
-    cv::Mat create_info_panel(int height);
+    static void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds);
+    static cv::Mat create_info_panel(int height);
+    static cv::Mat preprocess_image(const cv::Mat& image);
+    static cv::Rect compute_bounding_box(const float* data, float x_factor, float y_factor);
 
 private:
     cv::dnn::Net net;
 
-    cv::Mat preprocess_image(const cv::Mat& image);
-    std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, std::vector<int>& classIds, std::vector<float>& scores);
-    cv::Rect compute_bounding_box(const float* data, float x_factor, float y_factor);
+    static std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, std::vector<int>& classIds, std::vector<float>& scores);
 };
 
 #endif // DETECT_AND_DRAW_H

@@ -28,6 +28,7 @@ SORT::Track::Track(int track_id, cv::Rect bbox, int class_id) {
     kf.statePost.at<float>(1) = bbox.y + bbox.height / 2;
 }
 
+
 void SORT::Track::update(cv::Rect new_box) {
     cv::Mat meas = (cv::Mat_<float>(2, 1) << new_box.x + new_box.width / 2, new_box.y + new_box.height / 2);
     kf.correct(meas);
@@ -35,6 +36,7 @@ void SORT::Track::update(cv::Rect new_box) {
     frames_since_seen = 0;
     matched_in_this_frame = true;
 }
+
 
 void SORT::Track::predict() {
     cv::Mat pred = kf.predict();
@@ -45,7 +47,6 @@ void SORT::Track::predict() {
 }
 
 
-// 🔹 1. Bestehende Tracks updaten
 void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (auto& track : tracks) {
         float best_iou = 0;
@@ -72,7 +73,7 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
     }
 }
 
-// 🔹 2. Neue Tracks hinzufügen
+
 void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
@@ -98,12 +99,12 @@ void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std
     }
 }
 
-// 🔹 3. Alte Tracks entfernen
+
 void SORT::remove_old_tracks() {
     std::erase_if(tracks, [](const Track& t) { return t.frames_since_seen > 30; });
 }
 
-// 🔹 4. Zähler aktualisieren
+
 void SORT::update_counts() {
     std::lock_guard<std::mutex> lock(count_mutex);
 
@@ -112,6 +113,7 @@ void SORT::update_counts() {
         actual_counts[track.classId]++;
     }
 }
+
 
 void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
     std::vector<bool> matched(detected_boxes.size(), false);

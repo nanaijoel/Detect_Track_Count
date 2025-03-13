@@ -35,7 +35,7 @@ cv::Rect DetectAndDraw::compute_bounding_box(const float* data, float x_factor, 
     float height = data[3] * y_factor;
     int left = std::max(0, static_cast<int>(centerX - width / 2));
     int top = std::max(0, static_cast<int>(centerY - height / 2));
-    return cv::Rect(left, top, static_cast<int>(width), static_cast<int>(height));
+    return {left, top, static_cast<int>(width), static_cast<int>(height)};
 }
 
 
@@ -53,7 +53,7 @@ std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv:
 
     for (int i = 0; i < numDetections; ++i) {
         const float* data = output2D.ptr<float>(i);
-        cv::Mat scoresMat(1, 3, CV_32FC1, (void*)(data + 4));
+        cv::Mat scoresMat(1, 3, CV_32FC1, const_cast<void*>(static_cast<const void*>(data + 4)));
         cv::Point classIdPoint;
         double maxClassScore;
         cv::minMaxLoc(scoresMat, nullptr, &maxClassScore, nullptr, &classIdPoint);

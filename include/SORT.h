@@ -3,11 +3,9 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/video/tracking.hpp>
-#include <opencv2/imgproc.hpp>
 #include <mutex>
 #include <map>
 #include <vector>
-#include <set>
 #include <atomic>
 
 extern std::mutex count_mutex;
