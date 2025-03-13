@@ -37,8 +37,10 @@ void camera_processing(cv::dnn::Net& net) {
             frame = shared_frame.clone();
         }
 
-        std::vector<int> classIds;
-        std::vector<cv::Rect> boxes = detect_objects(net, frame, classIds);
+        Detections detections = detect_objects(net, frame);
+        std::vector<cv::Rect> boxes = detections.boxes;
+        std::vector<int> classIds = detections.classIds;
+
 
         tracker.update_tracks(boxes, classIds);
         draw_detections(frame, boxes, classIds);

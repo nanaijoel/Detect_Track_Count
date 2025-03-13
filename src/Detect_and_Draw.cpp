@@ -1,17 +1,20 @@
 #include "Detect_and_Draw.h"
-#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <mutex>
 
-
 extern std::mutex count_mutex;
 
-
 cv::Mat preprocess_image(const cv::Mat& image) {
+    if (image.empty()) {
+        std::cerr << "Image is empty - Error!\n";
+        return {};
+    }
+
     cv::Mat blob;
     cv::dnn::blobFromImage(image, blob, 1.0 / 255.0,
                            cv::Size(INP_WIDTH, INP_HEIGHT),
                            cv::Scalar(0, 0, 0), true, false);
+
     return blob;
 }
 
@@ -25,23 +28,8 @@ cv::dnn::Net load_model(const std::string& model_path) {
     return net;
 }
 
-std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, std::vector<int>& classIds) {
-    if (image.empty()) {
-        std::cerr << "Image is empty - Error!\n";
-        return {};
-    }
 
-    cv::Mat blob;
-    cv::dnn::blobFromImage(image, blob, 1.0 / 255.0, cv::Size(INP_WIDTH, INP_HEIGHT), cv::Scalar(0, 0, 0), true, false);
-
-    if (blob.empty()) {
-        std::cerr << "Blob creation failed - Error!" << std::endl;
-        return {};
-    }
-
-    net.setInput(blob);
-    cv::Mat output = net.forward();
-
+std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, std::vector<int>& classIds, std::vector<float>& scores) {
     int numDetections = output.size[2];
     int numFeatures = output.size[1];
 
@@ -51,7 +39,6 @@ std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, st
     float y_factor = static_cast<float>(image.rows) / INP_HEIGHT;
 
     std::vector<cv::Rect> boxes;
-    std::vector<float> scores;
     std::vector<int> detectedClassIds;
 
     for (int i = 0; i < numDetections; ++i) {
@@ -76,23 +63,40 @@ std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, st
         }
     }
 
+    classIds = detectedClassIds;
+    return boxes;
+}
+
+Detections postprocess_detections(const std::vector<cv::Rect>& boxes, const std::vector<float>& scores, const std::vector<int>& classIds) {
     std::vector<int> indices;
     cv::dnn::NMSBoxes(boxes, scores, CONF_THRESHOLD, NMS_THRESHOLD, indices);
 
-    std::vector<cv::Rect> filteredBoxes;
-    std::vector<int> filteredClassIds;
-
+    Detections result;
     for (int idx : indices) {
-        filteredBoxes.push_back(boxes[idx]);
-        filteredClassIds.push_back(detectedClassIds[idx]);
+        result.boxes.push_back(boxes[idx]);
+        result.classIds.push_back(classIds[idx]);
     }
 
-    classIds = filteredClassIds;
-    return filteredBoxes;
+    return result;
 }
 
+Detections detect_objects(cv::dnn::Net& net, const cv::Mat& image) {
+    cv::Mat blob = preprocess_image(image);
+    if (blob.empty()) return {};
+
+    net.setInput(blob);
+    cv::Mat output = net.forward();
+
+    std::vector<float> scores;
+    std::vector<int> classIds;
+    std::vector<cv::Rect> boxes = parse_detections(output, image, classIds, scores);
+
+    return postprocess_detections(boxes, scores, classIds);
+}
+
+
 void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
-    std::cout << "🔍 Draw " << boxes.size() << "objects...\n";
+    //std::cout << "Draw " << boxes.size() << " objects...\n";
 
     for (size_t i = 0; i < boxes.size(); ++i) {
         cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 200), 3);
@@ -107,7 +111,6 @@ void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const s
         cv::putText(image, classname, cv::Point(textX, textY), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 0, 0), 2);
     }
 }
-
 
 cv::Mat create_info_panel(int height) {
     cv::Mat info_panel(height, 300, CV_8UC3, cv::Scalar(0, 0, 0));

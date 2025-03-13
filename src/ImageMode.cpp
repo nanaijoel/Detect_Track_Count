@@ -27,8 +27,10 @@ void image_mode(cv::dnn::Net& net, const std::string& imgDirectory) {
             continue;
         }
 
-        std::vector<int> classIds;
-        std::vector<cv::Rect> boxes = detect_objects(net, image, classIds);
+        Detections detections = detect_objects(net, image);
+        std::vector<cv::Rect> boxes = detections.boxes;
+        std::vector<int> classIds = detections.classIds;
+
 
         std::cout << "Objects found: " << boxes.size() << std::endl;
         if (boxes.empty()) continue;
