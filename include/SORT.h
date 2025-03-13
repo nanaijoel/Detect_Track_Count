@@ -10,13 +10,10 @@
 #include <set>
 #include <atomic>
 
-
 extern std::mutex count_mutex;
 extern std::atomic<bool> stopThreads;
 extern std::map<int, int> total_counts;
 extern std::map<int, int> actual_counts;
-
-
 
 class SORT {
 public:
@@ -38,6 +35,12 @@ public:
 
     void update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds);
     std::vector<Track> get_tracks();
+
+private:
+    void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
+    void add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
+    void remove_old_tracks();
+    void update_counts();
 };
 
 #endif // SORT_H

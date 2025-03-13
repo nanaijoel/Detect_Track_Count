@@ -44,15 +44,9 @@ void SORT::Track::predict() {
     matched_in_this_frame = false;
 }
 
-void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
-    std::vector<bool> matched(detected_boxes.size(), false);
-    std::map<int, int> temp_actual_counts = {{0, 0}, {1, 0}, {2, 0}};
-    std::set<int> seen_track_ids;
 
-    for (auto& track : tracks) {
-        track.predict();
-    }
-
+// 🔹 1. Bestehende Tracks updaten
+void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (auto& track : tracks) {
         float best_iou = 0;
         int best_match = -1;
@@ -74,11 +68,12 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
         if (best_match != -1) {
             track.update(detected_boxes[best_match]);
             matched[best_match] = true;
-            seen_track_ids.insert(track.id);
-            temp_actual_counts[track.classId]++;
         }
     }
+}
 
+// 🔹 2. Neue Tracks hinzufügen
+void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
             bool is_truly_new = true;
@@ -86,35 +81,52 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
             for (const auto& track : tracks) {
                 float dist = std::sqrt(std::pow(track.box.x - detected_boxes[i].x, 2) +
                                        std::pow(track.box.y - detected_boxes[i].y, 2));
-                if (dist < 50) {
+
+                if (dist < 50 && track.frames_since_seen < 3) {
                     is_truly_new = false;
                     break;
                 }
             }
 
             tracks.emplace_back(next_id++, detected_boxes[i], classIds[i]);
-            seen_track_ids.insert(next_id - 1);
 
             if (is_truly_new) {
                 std::lock_guard<std::mutex> lock(count_mutex);
                 total_counts[classIds[i]]++;
             }
-
-            temp_actual_counts[classIds[i]]++;
         }
-    }
-
-    tracks.erase(std::remove_if(tracks.begin(), tracks.end(),
-                                [](const Track& t) { return t.frames_since_seen > 30; }),
-                 tracks.end());
-
-    {
-        std::lock_guard<std::mutex> lock(count_mutex);
-        actual_counts = temp_actual_counts;
     }
 }
 
+// 🔹 3. Alte Tracks entfernen
+void SORT::remove_old_tracks() {
+    std::erase_if(tracks, [](const Track& t) { return t.frames_since_seen > 30; });
+}
+
+// 🔹 4. Zähler aktualisieren
+void SORT::update_counts() {
+    std::lock_guard<std::mutex> lock(count_mutex);
+
+    actual_counts.clear();
+    for (const auto& track : tracks) {
+        actual_counts[track.classId]++;
+    }
+}
+
+void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
+    std::vector<bool> matched(detected_boxes.size(), false);
+
+    for (auto& track : tracks) {
+        track.predict();
+    }
+
+    match_existing_tracks(detected_boxes, classIds, matched);
+    add_new_tracks(detected_boxes, classIds, matched);
+    remove_old_tracks();
+    update_counts();
+}
 
 std::vector<SORT::Track> SORT::get_tracks() {
     return tracks;
 }
+

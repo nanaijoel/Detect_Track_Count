@@ -14,8 +14,8 @@ int main() {
     cv::dnn::Net net = load_model("../best.onnx");
 
     int mode;
-    std::cout << "Type in console 1 or 2 in console and press ENTER:\n"
-                 "'1' for Image-Detection, '2' for Live-Camera Tracking): ";
+    std::cout << "Type 1 or 2 in console and press ENTER:\n"
+                 "1 for Image-Detection, 2 for Live-Camera Tracking): ";
     std::cin >> mode;
 
     if (mode == 1) {
