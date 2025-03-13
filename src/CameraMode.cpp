@@ -39,10 +39,7 @@ void camera_processing(cv::dnn::Net& net) {
         tracker.update_tracks(boxes, classIds);
         draw_detections(frame, boxes, classIds);
 
-        // **Neues Info-Panel abrufen**
         cv::Mat info_panel = create_info_panel(frame.rows);
-
-        // **Kamera-Output + Info-Panel zusammenfügen**
         cv::Mat combined_output;
         cv::hconcat(frame, info_panel, combined_output);
         cv::imshow("Live YOLO SORT Detection", combined_output);

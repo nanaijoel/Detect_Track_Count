@@ -5,15 +5,15 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include "SORT.h"  // Für den Tracker
+#include "SORT.h"
 
-// Globale Variablen für Kamera-Threads
+
 extern std::mutex frame_mutex;
 extern std::atomic<bool> stopThreads;
 extern cv::Mat shared_frame;
-extern SORT tracker;  // **Extern deklarieren, um den Tracker zu nutzen**
+extern SORT tracker;
 
-// Funktionen
+
 void camera_capture(int camID);
 void camera_processing(cv::dnn::Net& net);
 void camera_thread(cv::dnn::Net& net, int camID);

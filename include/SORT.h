@@ -10,13 +10,14 @@
 #include <set>
 #include <atomic>
 
-// **Globale Variablen für Tracking & Multithreading**
+
 extern std::mutex count_mutex;
 extern std::atomic<bool> stopThreads;
-extern std::map<int, int> total_counts;  // Gesamtanzahl aller erkannten Objekte
-extern std::map<int, int> actual_counts; // Anzahl der aktuell erkannten Objekte
+extern std::map<int, int> total_counts;
+extern std::map<int, int> actual_counts;
 
-// **SORT-Tracker-Klasse**
+
+
 class SORT {
 public:
     struct Track {

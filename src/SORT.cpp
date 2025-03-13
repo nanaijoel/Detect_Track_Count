@@ -114,7 +114,7 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
     }
 }
 
-// **Hier wird die fehlende Methode get_tracks() hinzugefügt**
+
 std::vector<SORT::Track> SORT::get_tracks() {
     return tracks;
 }

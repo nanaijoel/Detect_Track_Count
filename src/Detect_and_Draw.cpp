@@ -19,7 +19,7 @@ cv::Mat preprocess_image(const cv::Mat& image) {
 cv::dnn::Net load_model(const std::string& model_path) {
     cv::dnn::Net net = cv::dnn::readNetFromONNX(model_path);
     if (net.empty()) {
-        std::cerr << "Fehler beim Laden des Modells!\n";
+        std::cerr << "Model loading - Error!\n";
         exit(-1);
     }
     return net;
@@ -27,7 +27,7 @@ cv::dnn::Net load_model(const std::string& model_path) {
 
 std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, std::vector<int>& classIds) {
     if (image.empty()) {
-        std::cerr << "❌ Fehler: Eingabebild ist leer!\n";
+        std::cerr << "Image is empty - Error!\n";
         return {};
     }
 
@@ -35,7 +35,7 @@ std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, st
     cv::dnn::blobFromImage(image, blob, 1.0 / 255.0, cv::Size(INP_WIDTH, INP_HEIGHT), cv::Scalar(0, 0, 0), true, false);
 
     if (blob.empty()) {
-        std::cerr << "❌ Fehler: Blob-Erstellung fehlgeschlagen!" << std::endl;
+        std::cerr << "Blob creation failed - Error!" << std::endl;
         return {};
     }
 
@@ -92,7 +92,7 @@ std::vector<cv::Rect> detect_objects(cv::dnn::Net& net, const cv::Mat& image, st
 }
 
 void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
-    std::cout << "🔍 Zeichne " << boxes.size() << " Objekte...\n";
+    std::cout << "🔍 Draw " << boxes.size() << "objects...\n";
 
     for (size_t i = 0; i < boxes.size(); ++i) {
         cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 200), 3);

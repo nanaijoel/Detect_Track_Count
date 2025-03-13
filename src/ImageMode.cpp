@@ -16,21 +16,21 @@ void image_mode(cv::dnn::Net& net, const std::string& imgDirectory) {
     }
 
     if (imagePaths.empty()) {
-        std::cerr << "❌ Keine Bilder gefunden im Verzeichnis: " << imgDirectory << "\n";
+        std::cerr << "Image path is empty - Error!" << imgDirectory << "\n";
         return;
     }
 
     for (const auto& imagePath : imagePaths) {
         cv::Mat image = cv::imread(imagePath);
         if (image.empty()) {
-            std::cerr << "⚠ Fehler: Bild konnte nicht geladen werden!\n";
+            std::cerr << "Couldn't load image - Error!\n";
             continue;
         }
 
         std::vector<int> classIds;
         std::vector<cv::Rect> boxes = detect_objects(net, image, classIds);
 
-        std::cout << "🎯 Gefundene Objekte: " << boxes.size() << std::endl;
+        std::cout << "Objects found: " << boxes.size() << std::endl;
         if (boxes.empty()) continue;
 
         draw_detections(image, boxes, classIds);
@@ -38,7 +38,7 @@ void image_mode(cv::dnn::Net& net, const std::string& imgDirectory) {
         cv::resize(image, image, cv::Size(800, 600));
         cv::imshow("YOLO Image Detection", image);
 
-        std::cout << "🔹 Drücke eine Taste für das nächste Bild oder ESC zum Beenden\n";
+        std::cout << "Press any key to continue or ESC to finish the program.\n";
         int key = cv::waitKey(0);
         if (key == 27) break;
     }
