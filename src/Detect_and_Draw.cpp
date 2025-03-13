@@ -1,10 +1,20 @@
-#include "Detect_and_Draw.h"
+#include "Detect_And_Draw.h"
 #include <iostream>
 #include <mutex>
 
 extern std::mutex count_mutex;
 
-cv::Mat preprocess_image(const cv::Mat& image) {
+
+DetectAndDraw::DetectAndDraw(const std::string& model_path) {
+    net = cv::dnn::readNetFromONNX(model_path);
+    if (net.empty()) {
+        std::cerr << "Model loading failed - Error!\n";
+        exit(-1);
+    }
+}
+
+
+cv::Mat DetectAndDraw::preprocess_image(const cv::Mat& image) {
     if (image.empty()) {
         std::cerr << "Image is empty - Error!\n";
         return {};
@@ -14,27 +24,27 @@ cv::Mat preprocess_image(const cv::Mat& image) {
     cv::dnn::blobFromImage(image, blob, 1.0 / 255.0,
                            cv::Size(INP_WIDTH, INP_HEIGHT),
                            cv::Scalar(0, 0, 0), true, false);
-
     return blob;
 }
 
 
-cv::dnn::Net load_model(const std::string& model_path) {
-    cv::dnn::Net net = cv::dnn::readNetFromONNX(model_path);
-    if (net.empty()) {
-        std::cerr << "Model loading - Error!\n";
-        exit(-1);
-    }
-    return net;
+cv::Rect DetectAndDraw::compute_bounding_box(const float* data, float x_factor, float y_factor) {
+    float centerX = data[0] * x_factor;
+    float centerY = data[1] * y_factor;
+    float width = data[2] * x_factor;
+    float height = data[3] * y_factor;
+    int left = std::max(0, static_cast<int>(centerX - width / 2));
+    int top = std::max(0, static_cast<int>(centerY - height / 2));
+    return cv::Rect(left, top, static_cast<int>(width), static_cast<int>(height));
 }
 
 
-std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, std::vector<int>& classIds, std::vector<float>& scores) {
+std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv::Mat& image,
+                                                      std::vector<int>& classIds, std::vector<float>& scores) {
     int numDetections = output.size[2];
     int numFeatures = output.size[1];
 
     cv::Mat output2D = output.reshape(1, numFeatures).t();
-
     float x_factor = static_cast<float>(image.cols) / INP_WIDTH;
     float y_factor = static_cast<float>(image.rows) / INP_HEIGHT;
 
@@ -49,17 +59,9 @@ std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, st
         cv::minMaxLoc(scoresMat, nullptr, &maxClassScore, nullptr, &classIdPoint);
 
         if (maxClassScore > CONF_THRESHOLD) {
-            int classId = classIdPoint.x;
-            float centerX = data[0] * x_factor;
-            float centerY = data[1] * y_factor;
-            float width = data[2] * x_factor;
-            float height = data[3] * y_factor;
-            int left = std::max(0, static_cast<int>(centerX - width / 2));
-            int top = std::max(0, static_cast<int>(centerY - height / 2));
-
-            boxes.emplace_back(left, top, static_cast<int>(width), static_cast<int>(height));
+            boxes.push_back(compute_bounding_box(data, x_factor, y_factor));
             scores.push_back(static_cast<float>(maxClassScore));
-            detectedClassIds.push_back(classId);
+            detectedClassIds.push_back(classIdPoint.x);
         }
     }
 
@@ -67,20 +69,7 @@ std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, st
     return boxes;
 }
 
-Detections postprocess_detections(const std::vector<cv::Rect>& boxes, const std::vector<float>& scores, const std::vector<int>& classIds) {
-    std::vector<int> indices;
-    cv::dnn::NMSBoxes(boxes, scores, CONF_THRESHOLD, NMS_THRESHOLD, indices);
-
-    Detections result;
-    for (int idx : indices) {
-        result.boxes.push_back(boxes[idx]);
-        result.classIds.push_back(classIds[idx]);
-    }
-
-    return result;
-}
-
-Detections detect_objects(cv::dnn::Net& net, const cv::Mat& image) {
+std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image, std::vector<int>& classIds) {
     cv::Mat blob = preprocess_image(image);
     if (blob.empty()) return {};
 
@@ -88,16 +77,26 @@ Detections detect_objects(cv::dnn::Net& net, const cv::Mat& image) {
     cv::Mat output = net.forward();
 
     std::vector<float> scores;
-    std::vector<int> classIds;
     std::vector<cv::Rect> boxes = parse_detections(output, image, classIds, scores);
 
-    return postprocess_detections(boxes, scores, classIds);
+    // Non-Maximum Suppression (NMS)
+    std::vector<int> indices;
+    cv::dnn::NMSBoxes(boxes, scores, CONF_THRESHOLD, NMS_THRESHOLD, indices);
+
+    std::vector<cv::Rect> filteredBoxes;
+    std::vector<int> filteredClassIds;
+
+    for (int idx : indices) {
+        filteredBoxes.push_back(boxes[idx]);
+        filteredClassIds.push_back(classIds[idx]);
+    }
+
+    classIds = filteredClassIds;
+    return filteredBoxes;
 }
 
 
-void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
-    //std::cout << "Draw " << boxes.size() << " objects...\n";
-
+void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
     for (size_t i = 0; i < boxes.size(); ++i) {
         cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 200), 3);
 
@@ -112,7 +111,8 @@ void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const s
     }
 }
 
-cv::Mat create_info_panel(int height) {
+
+cv::Mat DetectAndDraw::create_info_panel(int height) {
     cv::Mat info_panel(height, 300, CV_8UC3, cv::Scalar(0, 0, 0));
     cv::putText(info_panel, "OBJECT COUNTS", cv::Point(20, 50),
                 cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 55, 255), 3);

@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-void image_mode(cv::dnn::Net& net, const std::string& imgDirectory) {
+void image_mode(DetectAndDraw& detector, const std::string& imgDirectory) {
     std::vector<std::string> imagePaths;
     for (const auto& entry : fs::directory_iterator(imgDirectory)) {
         std::string filePath = entry.path().string();
@@ -27,15 +27,15 @@ void image_mode(cv::dnn::Net& net, const std::string& imgDirectory) {
             continue;
         }
 
-        Detections detections = detect_objects(net, image);
-        std::vector<cv::Rect> boxes = detections.boxes;
-        std::vector<int> classIds = detections.classIds;
+        std::vector<int> classIds;
+        std::vector<cv::Rect> boxes = detector.detect_objects(image, classIds);
 
 
         std::cout << "Objects found: " << boxes.size() << std::endl;
         if (boxes.empty()) continue;
 
-        draw_detections(image, boxes, classIds);
+        detector.draw_detections(image, boxes, classIds);
+
 
         cv::resize(image, image, cv::Size(800, 600));
         cv::imshow("YOLO Image Detection", image);

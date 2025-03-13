@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 int main() {
     SetConsoleOutputCP(CP_UTF8);
 
-    cv::dnn::Net net = load_model("../best.onnx");
+    DetectAndDraw detector("../best.onnx");
 
     int mode;
     std::cout << "Type 1 or 2 in console and press ENTER:\n"
@@ -19,10 +19,10 @@ int main() {
     std::cin >> mode;
 
     if (mode == 1) {
-        image_mode(net, "../images/");
+        image_mode(detector, "../images/");
     }
     else if (mode == 2) {
-        camera_thread(net, 0);
+        camera_thread(detector, 0);
     }
 
     return 0;
