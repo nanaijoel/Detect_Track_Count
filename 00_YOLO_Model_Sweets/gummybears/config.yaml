@@ -1,0 +1,6 @@
+train: C:/Users/j.nanai/PycharmProjects/00_YOLO_Model_Sweets/gummybears/images/
+val: C:/Users/j.nanai/PycharmProjects/00_YOLO_Model_Sweets/gummybears/images/
+
+nc: 3  # Amount of classes
+
+names: ["gummybear", "frog", "cola"]  # Name of classes
