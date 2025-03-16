@@ -1,4 +1,6 @@
 #include "Sort.h"
+#include <iostream>
+
 
 std::mutex count_mutex;
 std::atomic<bool> stopThreads(false);
@@ -116,6 +118,60 @@ void SORT::update_counts() {
 }
 
 
+void SORT::update_distances() {
+    previous_distances.clear();
+    for (size_t i = 0; i < tracks.size(); i++) {
+        cv::Point2f center_i = {tracks[i].box.x + tracks[i].box.width / 2.0f,
+                                tracks[i].box.y + tracks[i].box.height / 2.0f};
+        for (size_t j = i + 1; j < tracks.size(); j++) {
+            cv::Point2f center_j = {tracks[j].box.x + tracks[j].box.width / 2.0f,
+                                    tracks[j].box.y + tracks[j].box.height / 2.0f};
+
+            float dist = std::hypot(center_i.x - center_j.x, center_i.y - center_j.y);
+            previous_distances[{tracks[i].id, tracks[j].id}] = dist;
+        }
+    }
+}
+
+// ReSharper disable once CppDFAConstantParameter
+bool SORT::structure_matches(const std::vector<Track>& new_tracks, float tolerance) const {
+    std::map<std::pair<int, int>, float> new_distances;
+
+    for (size_t i = 0; i < new_tracks.size(); i++) {
+        // Calculate the middle of bounding box
+        cv::Point2f center_i = {
+            static_cast<float>(new_tracks[i].box.x) + static_cast<float>(new_tracks[i].box.width) / 2.0f,
+            static_cast<float>(new_tracks[i].box.y) + static_cast<float>(new_tracks[i].box.height) / 2.0f
+        };
+
+        for (size_t j = i + 1; j < new_tracks.size(); j++) {
+            cv::Point2f center_j = {
+                static_cast<float>(new_tracks[j].box.x) + static_cast<float>(new_tracks[j].box.width) / 2.0f,
+                static_cast<float>(new_tracks[j].box.y) + static_cast<float>(new_tracks[j].box.height) / 2.0f
+            };
+
+            // Calculate euclidian distance
+            float dist = std::hypot(center_i.x - center_j.x, center_i.y - center_j.y);
+            new_distances[{new_tracks[i].id, new_tracks[j].id}] = dist;
+        }
+    }
+
+    // Compare distances with old distances
+    for (const auto& [key, old_dist] : previous_distances) {
+        auto it = new_distances.find(key);
+        if (it != new_distances.end()) {
+            float new_dist = it->second;
+            if (std::abs(old_dist - new_dist) > tolerance) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+
 void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
     std::vector<bool> matched(detected_boxes.size(), false);
 
@@ -126,8 +182,11 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
     match_existing_tracks(detected_boxes, classIds, matched);
     add_new_tracks(detected_boxes, classIds, matched);
     remove_old_tracks();
+
     update_counts();
+    update_distances();
 }
+
 
 std::vector<SORT::Track> SORT::get_tracks() const {
     return tracks;

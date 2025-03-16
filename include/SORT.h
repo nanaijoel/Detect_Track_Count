@@ -5,6 +5,7 @@
 #include <opencv2/video/tracking.hpp>
 #include <mutex>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <atomic>
 
@@ -12,6 +13,14 @@ extern std::mutex count_mutex;
 extern std::atomic<bool> stopThreads;
 extern std::map<int, int> total_counts;
 extern std::map<int, int> actual_counts;
+
+// 🔹 Hash-Funktion für std::pair<int, int>
+struct pair_hash {
+    template <class T1, class T2>
+    std::size_t operator()(const std::pair<T1, T2>& p) const {
+        return std::hash<T1>{}(p.first) ^ (std::hash<T2>{}(p.second) << 1);
+    }
+};
 
 class SORT {
 public:
@@ -32,9 +41,14 @@ public:
     int next_id = 0;
 
     void update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds);
-    std::vector<Track> get_tracks() const;
+    [[nodiscard]] std::vector<Track> get_tracks() const;
 
 private:
+    std::unordered_map<std::pair<int, int>, float, pair_hash> previous_distances;
+
+
+    bool structure_matches(const std::vector<Track>& new_tracks, float tolerance = 15.0f) const;
+    void update_distances();
     void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void remove_old_tracks();

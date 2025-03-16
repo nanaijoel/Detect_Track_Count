@@ -20,6 +20,8 @@ public:
 
     std::vector<cv::Rect> detect_objects(const cv::Mat& image, std::vector<int>& classIds);
 
+    static void mouse_callback(int event, int x, int y, int flags, void* userdata);
+    static void reset_counts();
     static void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds);
     static cv::Mat create_info_panel(int height);
     static cv::Mat preprocess_image(const cv::Mat& image);

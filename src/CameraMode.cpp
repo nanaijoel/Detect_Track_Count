@@ -24,6 +24,9 @@ void camera_capture(int camID) {
 }
 
 void camera_processing(DetectAndDraw& detector) {
+
+    cv::namedWindow("Live YOLO SORT Detection"); // Fenster sicherstellen
+    cv::setMouseCallback("Live YOLO SORT Detection", DetectAndDraw::mouse_callback, nullptr);
     while (!stopThreads) {
         cv::Mat frame;
         {
@@ -51,6 +54,7 @@ void camera_processing(DetectAndDraw& detector) {
         cv::Mat combined_output;
         cv::hconcat(frame, info_panel, combined_output);
         cv::imshow("Live YOLO SORT Detection", combined_output);
+        cv::setMouseCallback("Live YOLO SORT Detection", DetectAndDraw::mouse_callback, nullptr);
 
         if (cv::waitKey(1) == 27) stopThreads = true;
     }

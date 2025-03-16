@@ -1,6 +1,8 @@
-#include "Detect_And_Draw.h"
 #include <iostream>
 #include <mutex>
+#include "CameraMode.h"
+#include "Detect_And_Draw.h"
+
 
 extern std::mutex count_mutex;
 
@@ -112,9 +114,34 @@ void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>&
 }
 
 
+void DetectAndDraw::reset_counts() {
+    std::lock_guard<std::mutex> lock(count_mutex);
+    total_counts = {{0, 0}, {1, 0}, {2, 0}};
+    actual_counts = {{0, 0}, {1, 0}, {2, 0}};
+    std::cout << "[INFO] Reset Total counts!\n";
+}
+
+
+void DetectAndDraw::mouse_callback(int event, int x, int y, int flags, void* userdata) {
+
+    int frame_width = shared_frame.cols;
+
+    if (event == cv::EVENT_LBUTTONDOWN) {
+        if (x > frame_width) {
+            int adjusted_x = x - frame_width;
+            int adjusted_y = y;
+
+            if (adjusted_x >= 20 && adjusted_x <= 280 && adjusted_y >= 400 && adjusted_y <= 430) {
+                static_cast<DetectAndDraw*>(userdata)->reset_counts();
+            }
+        }
+    }
+}
+
+
 cv::Mat DetectAndDraw::create_info_panel(int height) {
     cv::Mat info_panel(height, 300, CV_8UC3, cv::Scalar(0, 0, 0));
-    cv::putText(info_panel, "OBJECT COUNTS", cv::Point(20, 50),
+    cv::putText(info_panel, "OBJECT COUNTS", cv::Point(45, 50),
                 cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 55, 255), 3);
 
     std::lock_guard<std::mutex> lock(count_mutex);
@@ -122,8 +149,14 @@ cv::Mat DetectAndDraw::create_info_panel(int height) {
         std::string classname = (i == 0) ? "Bear" : (i == 1) ? "Frog" : "Cola";
         cv::putText(info_panel, classname + " Actual: " + std::to_string(actual_counts[i]) +
                                   " | Total: " + std::to_string(total_counts[i]),
-                    cv::Point(20, 100 + i * 50),
+                    cv::Point(45, 100 + i * 50),
                     cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
     }
+
+    cv::rectangle(info_panel, cv::Point(15, height - 45), cv::Point(285, height - 85), cv::Scalar(255, 55, 255), -1);
+    cv::rectangle(info_panel, cv::Point(20, height - 50), cv::Point(280, height - 80), cv::Scalar(55, 55, 55), -1);
+    cv::putText(info_panel, "RESET TOTAL COUNTS", cv::Point(63, height - 60),
+                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
+
     return info_panel;
 }
