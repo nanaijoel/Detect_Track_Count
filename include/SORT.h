@@ -14,7 +14,6 @@ extern std::atomic<bool> stopThreads;
 extern std::map<int, int> total_counts;
 extern std::map<int, int> actual_counts;
 
-// 🔹 Hash-Funktion für std::pair<int, int>
 struct pair_hash {
     template <class T1, class T2>
     std::size_t operator()(const std::pair<T1, T2>& p) const {
@@ -30,7 +29,9 @@ public:
         int id;
         int classId;
         int frames_since_seen;
+        int frames_since_creation; // Neu: Objekt erst nach 3 Frames gezählt
         bool matched_in_this_frame;
+        bool was_counted; // Neu: Um doppelte Zählung zu verhindern
 
         Track(int track_id, cv::Rect bbox, int class_id);
         void update(cv::Rect new_box);
@@ -46,8 +47,7 @@ public:
 private:
     std::unordered_map<std::pair<int, int>, float, pair_hash> previous_distances;
 
-
-    bool structure_matches(const std::vector<Track>& new_tracks, float tolerance = 15.0f) const;
+    bool structure_matches(const std::vector<Track>& new_tracks, float tolerance = 10.0f) const;
     void update_distances();
     void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
