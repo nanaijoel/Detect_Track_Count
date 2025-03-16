@@ -29,7 +29,7 @@ public:
         int id;
         int classId;
         int frames_since_seen;
-        int frames_since_creation; // Neu: Objekt erst nach 3 Frames gezählt
+        int frames_since_creation; // Neu: Erst nach mehreren Frames zählen
         bool matched_in_this_frame;
         bool was_counted; // Neu: Um doppelte Zählung zu verhindern
 
@@ -47,12 +47,13 @@ public:
 private:
     std::unordered_map<std::pair<int, int>, float, pair_hash> previous_distances;
 
-    bool structure_matches(const std::vector<Track>& new_tracks, float tolerance = 10.0f) const;
     void update_distances();
+    // bool validate_object_identity(const Track& new_track);
     void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void remove_old_tracks();
     void update_counts();
+
 };
 
 #endif // SORT_H

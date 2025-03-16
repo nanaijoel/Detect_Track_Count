@@ -48,6 +48,19 @@ void SORT::Track::update(cv::Rect new_box) {
     frames_since_creation++;
 }
 
+void SORT::update_distances() {
+    previous_distances.clear();
+    for (size_t i = 0; i < tracks.size(); i++) {
+        for (size_t j = i + 1; j < tracks.size(); j++) {
+            float dist = std::hypot(
+                static_cast<float>(tracks[i].box.x - tracks[j].box.x),
+                static_cast<float>(tracks[i].box.y - tracks[j].box.y)
+            );
+            previous_distances[{tracks[i].id, tracks[j].id}] = dist;
+        }
+    }
+}
+
 void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (auto& track : tracks) {
         float best_iou = 0;
@@ -72,8 +85,7 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
         if (best_match != -1) {
             track.update(detected_boxes[best_match]);
 
-
-            if (track.frames_since_creation >= 5 && !track.was_counted) {
+            if (track.frames_since_creation >= 4 && !track.was_counted) {
                 std::lock_guard<std::mutex> lock(count_mutex);
                 total_counts[track.classId]++;
                 track.was_counted = true;
@@ -87,8 +99,8 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
 void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
-
             bool is_known = false;
+
             for (const auto& track : tracks) {
                 float dist = std::hypot(
                     static_cast<float>(track.box.x - detected_boxes[i].x),
@@ -126,45 +138,6 @@ void SORT::update_counts() {
     }
 }
 
-void SORT::update_distances() {
-    previous_distances.clear();
-    for (size_t i = 0; i < tracks.size(); i++) {
-        cv::Point2f center_i = {tracks[i].box.x + tracks[i].box.width / 2.0f,
-                                tracks[i].box.y + tracks[i].box.height / 2.0f};
-        for (size_t j = i + 1; j < tracks.size(); j++) {
-            cv::Point2f center_j = {tracks[j].box.x + tracks[j].box.width / 2.0f,
-                                    tracks[j].box.y + tracks[j].box.height / 2.0f};
-
-            float dist = std::hypot(center_i.x - center_j.x, center_i.y - center_j.y);
-            previous_distances[{tracks[i].id, tracks[j].id}] = dist;
-        }
-    }
-}
-
-bool SORT::structure_matches(const std::vector<Track>& new_tracks, float tolerance) const {
-    std::unordered_map<std::pair<int, int>, float, pair_hash> new_distances;
-
-
-    for (size_t i = 0; i < new_tracks.size(); i++) {
-        cv::Point2f center_i = {
-            static_cast<float>(new_tracks[i].box.x) + static_cast<float>(new_tracks[i].box.width) / 2.0f,
-            static_cast<float>(new_tracks[i].box.y) + static_cast<float>(new_tracks[i].box.height) / 2.0f
-        };
-
-        for (size_t j = i + 1; j < new_tracks.size(); j++) {
-            cv::Point2f center_j = {
-                static_cast<float>(new_tracks[j].box.x) + static_cast<float>(new_tracks[j].box.width) / 2.0f,
-                static_cast<float>(new_tracks[j].box.y) + static_cast<float>(new_tracks[j].box.height) / 2.0f
-            };
-
-            float dist = std::hypot(center_i.x - center_j.x, center_i.y - center_j.y);
-            new_distances[{new_tracks[i].id, new_tracks[j].id}] = dist;
-        }
-    }
-
-    return new_distances == previous_distances;
-}
-
 void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
     std::vector<bool> matched(detected_boxes.size(), false);
 
@@ -172,14 +145,12 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std:
         track.predict();
     }
 
+    //update_distances();
     match_existing_tracks(detected_boxes, classIds, matched);
     add_new_tracks(detected_boxes, classIds, matched);
     remove_old_tracks();
-
     update_counts();
-    // update_distances();
 }
-
 
 std::vector<SORT::Track> SORT::get_tracks() const {
     return tracks;
