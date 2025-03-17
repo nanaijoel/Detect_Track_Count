@@ -4,10 +4,7 @@
 #include <opencv2/dnn.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
-#include <map>
 
-extern std::map<int, int> actual_counts;
-extern std::map<int, int> total_counts;
 
 constexpr float CONF_THRESHOLD = 0.70f;
 constexpr float NMS_THRESHOLD = 0.45f;

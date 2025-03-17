@@ -130,7 +130,7 @@ void DetectAndDraw::mouse_callback(int event, int x, int y, int flags, void* use
             int adjusted_y = y;
 
             if (adjusted_x >= 20 && adjusted_x <= 280 && adjusted_y >= 400 && adjusted_y <= 430) {
-                static_cast<DetectAndDraw*>(userdata)->reset_counts();
+                DetectAndDraw::reset_counts();
             }
         }
     }
