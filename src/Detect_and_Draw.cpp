@@ -4,8 +4,6 @@
 #include "Detect_And_Draw.h"
 
 
-extern std::mutex count_mutex;
-
 
 DetectAndDraw::DetectAndDraw(const std::string& model_path) {
     net = cv::dnn::readNetFromONNX(model_path);

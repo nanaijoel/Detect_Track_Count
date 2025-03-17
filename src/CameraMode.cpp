@@ -25,7 +25,7 @@ void camera_capture(int camID) {
 
 void camera_processing(DetectAndDraw& detector) {
 
-    cv::namedWindow("Live YOLO SORT Detection"); // Fenster sicherstellen
+    cv::namedWindow("Live YOLO SORT Detection");
     cv::setMouseCallback("Live YOLO SORT Detection", DetectAndDraw::mouse_callback, nullptr);
     while (!stopThreads) {
         cv::Mat frame;
@@ -38,7 +38,9 @@ void camera_processing(DetectAndDraw& detector) {
         std::vector<int> classIds;
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds);
 
-        tracker.update_tracks(boxes, classIds);
+        int frame_width = frame.cols;
+        tracker.update_tracks(boxes, classIds, frame_width);
+
         DetectAndDraw::draw_detections(frame, boxes, classIds);
 
         {
@@ -49,6 +51,11 @@ void camera_processing(DetectAndDraw& detector) {
                 actual_counts[classId]++;
             }
         }
+
+        int scanline_x = frame.cols / 2;
+        cv::line(frame, cv::Point(scanline_x, 0), cv::Point(scanline_x, frame.rows), cv::Scalar(0, 255, 255), 2);
+
+
 
         cv::Mat info_panel = DetectAndDraw::create_info_panel(frame.rows);
         cv::Mat combined_output;

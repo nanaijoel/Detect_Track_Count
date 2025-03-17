@@ -13,9 +13,9 @@ SORT::Track::Track(int track_id, cv::Rect bbox, int class_id) {
     box = bbox;
     classId = class_id;
     frames_since_seen = 0;
-    frames_since_creation = 0;
     matched_in_this_frame = false;
     was_counted = false;
+    crossed_scanline = false;
 
     kf = cv::KalmanFilter(4, 2, 0);
     kf.transitionMatrix = (cv::Mat_<float>(4, 4) << 1, 0, 1, 0,
@@ -27,8 +27,9 @@ SORT::Track::Track(int track_id, cv::Rect bbox, int class_id) {
     kf.measurementNoiseCov = cv::Mat::eye(2, 2, CV_32F) * 1e-1;
     kf.errorCovPost = cv::Mat::eye(4, 4, CV_32F);
 
-    kf.statePost.at<float>(0) = bbox.x + bbox.width / 2.f;
-    kf.statePost.at<float>(1) = bbox.y + bbox.height / 2.f;
+    kf.statePost.at<float>(0) = static_cast<float>(bbox.x) + static_cast<float>(bbox.width) / 2.0f;
+    kf.statePost.at<float>(1) = static_cast<float>(bbox.y) + static_cast<float>(bbox.height) / 2.0f;
+
 }
 
 void SORT::Track::predict() {
@@ -40,25 +41,14 @@ void SORT::Track::predict() {
 }
 
 void SORT::Track::update(cv::Rect new_box) {
-    cv::Mat meas = (cv::Mat_<float>(2, 1) << new_box.x + new_box.width / 2, new_box.y + new_box.height / 2);
+    cv::Mat meas = (cv::Mat_<float>(2, 1) <<
+    static_cast<float>(new_box.x) + static_cast<float>(new_box.width) / 2.0f,
+    static_cast<float>(new_box.y) + static_cast<float>(new_box.height) / 2.0f);
+
     kf.correct(meas);
     box = new_box;
     frames_since_seen = 0;
     matched_in_this_frame = true;
-    frames_since_creation++;
-}
-
-void SORT::update_distances() {
-    previous_distances.clear();
-    for (size_t i = 0; i < tracks.size(); i++) {
-        for (size_t j = i + 1; j < tracks.size(); j++) {
-            float dist = std::hypot(
-                static_cast<float>(tracks[i].box.x - tracks[j].box.x),
-                static_cast<float>(tracks[i].box.y - tracks[j].box.y)
-            );
-            previous_distances[{tracks[i].id, tracks[j].id}] = dist;
-        }
-    }
 }
 
 void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
@@ -67,6 +57,8 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
         int best_match = -1;
 
         for (int i = 0; i < detected_boxes.size(); i++) {
+            if (track.classId != classIds[i]) continue;
+
             float intersection_area = static_cast<float>((track.box & detected_boxes[i]).area());
             float union_area = static_cast<float>(track.box.area()) + static_cast<float>(detected_boxes[i].area()) - intersection_area;
             float iou = intersection_area / union_area;
@@ -84,13 +76,6 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
 
         if (best_match != -1) {
             track.update(detected_boxes[best_match]);
-
-            if (track.frames_since_creation >= 4 && !track.was_counted) {
-                std::lock_guard<std::mutex> lock(count_mutex);
-                total_counts[track.classId]++;
-                track.was_counted = true;
-            }
-
             matched[best_match] = true;
         }
     }
@@ -99,23 +84,7 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, co
 void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
-            bool is_known = false;
-
-            for (const auto& track : tracks) {
-                float dist = std::hypot(
-                    static_cast<float>(track.box.x - detected_boxes[i].x),
-                    static_cast<float>(track.box.y - detected_boxes[i].y)
-                );
-
-                if (dist < 50 && track.frames_since_seen < 3) {
-                    is_known = true;
-                    break;
-                }
-            }
-
-            if (!is_known) {
-                tracks.emplace_back(next_id++, detected_boxes[i], classIds[i]);
-            }
+            tracks.emplace_back(next_id++, detected_boxes[i], classIds[i]);
         }
     }
 }
@@ -130,26 +99,43 @@ void SORT::remove_old_tracks() {
     }
 }
 
-void SORT::update_counts() {
+
+void SORT::update_counts(int scanline_x) {
     std::lock_guard<std::mutex> lock(count_mutex);
     actual_counts.clear();
-    for (const auto& track : tracks) {
+
+    for (auto& track : tracks) {
         actual_counts[track.classId]++;
+
+        int left_x = track.box.x;
+        int right_x = track.box.x + track.box.width;
+
+        bool is_crossing = (left_x <= scanline_x && right_x >= scanline_x);
+
+        if (is_crossing && !track.crossed_scanline) {
+            total_counts[track.classId]++;
+            track.crossed_scanline = true;
+        }
+
+        if (!is_crossing) {
+            track.crossed_scanline = false;
+        }
     }
 }
 
-void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds) {
+
+void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, int frame_width) {
     std::vector<bool> matched(detected_boxes.size(), false);
 
     for (auto& track : tracks) {
         track.predict();
     }
 
-    //update_distances();
     match_existing_tracks(detected_boxes, classIds, matched);
     add_new_tracks(detected_boxes, classIds, matched);
     remove_old_tracks();
-    update_counts();
+    update_counts(frame_width/2);
+
 }
 
 std::vector<SORT::Track> SORT::get_tracks() const {

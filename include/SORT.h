@@ -29,9 +29,9 @@ public:
         int id;
         int classId;
         int frames_since_seen;
-        int frames_since_creation; // Neu: Erst nach mehreren Frames zählen
         bool matched_in_this_frame;
-        bool was_counted; // Neu: Um doppelte Zählung zu verhindern
+        bool was_counted;
+        bool crossed_scanline;
 
         Track(int track_id, cv::Rect bbox, int class_id);
         void update(cv::Rect new_box);
@@ -41,19 +41,17 @@ public:
     std::vector<Track> tracks;
     int next_id = 0;
 
-    void update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds);
+    void update_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, int frame_width);
     [[nodiscard]] std::vector<Track> get_tracks() const;
 
 private:
     std::unordered_map<std::pair<int, int>, float, pair_hash> previous_distances;
 
-    void update_distances();
-    // bool validate_object_identity(const Track& new_track);
+
     void match_existing_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void add_new_tracks(const std::vector<cv::Rect>& detected_boxes, const std::vector<int>& classIds, std::vector<bool>& matched);
     void remove_old_tracks();
-    void update_counts();
-
+    void update_counts(int scanline_x);
 };
 
 #endif // SORT_H
