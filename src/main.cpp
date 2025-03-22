@@ -4,6 +4,8 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <windows.h>
+#include <Eigen/Dense>
+
 
 namespace fs = std::filesystem;
 

@@ -5,16 +5,17 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-enum-enum-conversion")
 
-
-set(OpenCV_DIR "C:/Users/j.nanai/.vcpkg-clion/vcpkg_heilige_scheisse/installed/x64-mingw-dynamic/share/opencv4")
+# OpenCV
+set(OpenCV_DIR "$ENV{OpenCV_DIR}/share/opencv4")
 find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui imgproc video dnn)
 
+find_package(Eigen3 REQUIRED CONFIG)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(include)
 
+link_directories($ENV{OpenCV_LIBS})
 
-link_directories("C:/Users/j.nanai/.vcpkg-clion/vcpkg_heilige_scheisse/installed/x64-mingw-dynamic/lib")
 
 set(SOURCES
         src/main.cpp
@@ -33,4 +34,4 @@ set(HEADERS
 
 add_executable(Sweets_Tracker_and_Counter ${SOURCES} ${HEADERS})
 
-target_link_libraries(Sweets_Tracker_and_Counter ${OpenCV_LIBS})
+target_link_libraries(Sweets_Tracker_and_Counter ${OpenCV_LIBS} Eigen3::Eigen)
