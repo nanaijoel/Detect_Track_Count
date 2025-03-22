@@ -23,6 +23,7 @@ set(SOURCES
         src/Detect_and_Draw.cpp
         src/ImageMode.cpp
         src/CameraMode.cpp
+        src/TrackRecoveryHelper.cpp
 )
 
 set(HEADERS
@@ -30,6 +31,7 @@ set(HEADERS
         include/Detect_and_Draw.h
         include/ImageMode.h
         include/CameraMode.h
+        include/TrackRecoveryHelper.h
 )
 
 add_executable(Sweets_Tracker_and_Counter ${SOURCES} ${HEADERS})
