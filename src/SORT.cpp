@@ -62,7 +62,6 @@ void SORT::Track::update(cv::Rect new_box, int new_class, float conf) {
     }
 }
 
-
 void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
                                  const std::vector<int>& classIds,
                                  const std::vector<float>& confidences,
@@ -98,20 +97,25 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
     }
 }
 
-
 void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes,
                           const std::vector<int>& classIds,
                           const std::vector<float>& confidences,
                           std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
-            Track new_track(next_id++, detected_boxes[i], classIds[i]);
-            new_track.last_confidence = confidences[i];
-            tracks.push_back(new_track);
+            int reuse_id;
+            if (recovery_helper.try_recover_single(detected_boxes[i], classIds[i], confidences[i], tracks, reuse_id)) {
+                Track recovered_track(reuse_id, detected_boxes[i], classIds[i]);
+                recovered_track.last_confidence = confidences[i];
+                tracks.push_back(recovered_track);
+            } else {
+                Track new_track(next_id++, detected_boxes[i], classIds[i]);
+                new_track.last_confidence = confidences[i];
+                tracks.push_back(new_track);
+            }
         }
     }
 }
-
 
 void SORT::remove_old_tracks() {
     for (auto it = tracks.begin(); it != tracks.end();) {
@@ -163,7 +167,6 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes,
     remove_old_tracks();
     update_counts(frame_width / 2);
 }
-
 
 std::vector<SORT::Track> SORT::get_tracks() const {
     return tracks;

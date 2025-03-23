@@ -24,6 +24,12 @@ public:
                      std::vector<bool>& matched,
                      std::vector<SORT::Track>& tracks);
 
+    bool try_recover_single(const cv::Rect& new_box,
+                            int new_class,
+                            float confidence,
+                            std::vector<SORT::Track>& tracks,
+                            int& reuse_id);
+
 private:
     std::vector<RecoveryCandidate> buffer;
     const int max_missing_frames = 8;

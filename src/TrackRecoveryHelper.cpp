@@ -54,3 +54,31 @@ void TrackRecoveryHelper::try_recover(const std::vector<cv::Rect>& detections,
         }
     }
 }
+
+bool TrackRecoveryHelper::try_recover_single(const cv::Rect& new_box,
+                                             int new_class,
+                                             float /*confidence*/,
+                                             std::vector<SORT::Track>& tracks,
+                                             int& reuse_id) {
+    cv::Point2f new_center(
+        static_cast<float>(new_box.x + new_box.width) / 2.0f,
+        static_cast<float>(new_box.y + new_box.height) / 2.0f
+    );
+
+    for (auto it = buffer.begin(); it != buffer.end(); ++it) {
+        float cand_center_x = static_cast<float>(it->predicted_box.x) + static_cast<float>(it->predicted_box.width) / 2.0f;
+        float cand_center_y = static_cast<float>(it->predicted_box.y) + static_cast<float>(it->predicted_box.height) / 2.0f;
+
+        float dx = new_center.x - cand_center_x;
+        float dy = new_center.y - cand_center_y;
+        float dist = std::sqrt(dx * dx + dy * dy);
+
+        if (dist <= max_distance && new_class == it->class_id) {
+            reuse_id = it->track_id;
+            buffer.erase(it);
+            return true;
+        }
+    }
+
+    return false;
+}
