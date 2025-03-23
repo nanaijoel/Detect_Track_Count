@@ -27,8 +27,9 @@ void image_mode(DetectAndDraw& detector, const std::string& imgDirectory) {
             continue;
         }
 
+        std::vector<float> confidences;
         std::vector<int> classIds;
-        std::vector<cv::Rect> boxes = detector.detect_objects(image, classIds);
+        std::vector<cv::Rect> boxes = detector.detect_objects(image, classIds, confidences);
 
 
         std::cout << "Objects found: " << boxes.size() << std::endl;

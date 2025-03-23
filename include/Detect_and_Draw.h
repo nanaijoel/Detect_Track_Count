@@ -15,7 +15,9 @@ class DetectAndDraw {
 public:
     explicit DetectAndDraw(const std::string& model_path);
 
-    std::vector<cv::Rect> detect_objects(const cv::Mat& image, std::vector<int>& classIds);
+    std::vector<cv::Rect> detect_objects(const cv::Mat& frame,
+                                      std::vector<int>& class_ids,
+                                      std::vector<float>& confidences);
 
     static void mouse_callback(int event, int x, int y, int flags, void* userdata);
     static void reset_counts();

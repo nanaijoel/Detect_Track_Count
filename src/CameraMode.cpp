@@ -36,9 +36,12 @@ void camera_processing(DetectAndDraw& detector) {
         }
 
         std::vector<int> classIds;
-        std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds);
+        std::vector<float> confidences;
+        std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
         int frame_width = frame.cols;
-        tracker.update_tracks(boxes, classIds, frame_width);
+
+        tracker.update_tracks(boxes, classIds, confidences, frame_width);
+
         DetectAndDraw::draw_detections(frame, boxes, classIds);
 
         {

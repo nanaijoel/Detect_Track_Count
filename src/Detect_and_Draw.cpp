@@ -69,7 +69,10 @@ std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv:
     return boxes;
 }
 
-std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image, std::vector<int>& classIds) {
+
+std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
+                                                    std::vector<int>& classIds,
+                                                    std::vector<float>& confidences) {
     cv::Mat blob = preprocess_image(image);
     if (blob.empty()) return {};
 
@@ -85,15 +88,19 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image, std::v
 
     std::vector<cv::Rect> filteredBoxes;
     std::vector<int> filteredClassIds;
+    std::vector<float> filteredConfidences;
 
     for (int idx : indices) {
         filteredBoxes.push_back(boxes[idx]);
         filteredClassIds.push_back(classIds[idx]);
+        filteredConfidences.push_back(scores[idx]);
     }
 
     classIds = filteredClassIds;
+    confidences = filteredConfidences;
     return filteredBoxes;
 }
+
 
 
 void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
