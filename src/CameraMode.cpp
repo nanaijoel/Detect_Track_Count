@@ -11,6 +11,10 @@ void camera_capture(int camID) {
         std::cerr << "Couldn't open camera - Error!\n";
         return;
     }
+    // cap.set(cv::CAP_PROP_AUTO_EXPOSURE, 0.25);  // 0.25 = manually
+    // cap.set(cv::CAP_PROP_EXPOSURE, -3.9);         //  -2 to -6
+    // cap.set(cv::CAP_PROP_BRIGHTNESS, 155);      // values (50–255)
+    // cap.set(cv::CAP_PROP_CONTRAST, 90);         // 0-100
 
     while (!stopThreads) {
         cv::Mat frame;

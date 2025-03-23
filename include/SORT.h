@@ -34,6 +34,7 @@ public:
         bool matched_in_this_frame;
         bool was_counted;
         bool crossed_scanline;
+        cv::Point2f prev_center;
 
         std::unordered_map<int, std::vector<float>> class_confidences;
 
