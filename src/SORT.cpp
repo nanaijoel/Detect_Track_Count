@@ -57,7 +57,6 @@ void SORT::Track::update(cv::Rect new_box, int new_class, float conf) {
     last_confidence = conf;
     class_confidences[new_class].push_back(conf);
 
-    // Stabilitätscheck: mind. 5 gleiche Erkennungen
     if (class_confidences[new_class].size() >= 5) {
         stable_class = new_class;
     }
@@ -107,7 +106,7 @@ void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes,
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
             Track new_track(next_id++, detected_boxes[i], classIds[i]);
-            new_track.last_confidence = confidences[i];  // falls nützlich
+            new_track.last_confidence = confidences[i];
             tracks.push_back(new_track);
         }
     }
