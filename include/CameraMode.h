@@ -1,9 +1,6 @@
 #ifndef CAMERA_MODE_H
 #define CAMERA_MODE_H
 
-#include <opencv2/opencv.hpp>
-#include <atomic>
-#include <mutex>
 #include "Detect_and_Draw.h"
 #include "Sort.h"
 

@@ -1,7 +1,6 @@
 #include "Detect_and_Draw.h"
 #include "ImageMode.h"
 #include "CameraMode.h"
-#include <opencv2/opencv.hpp>
 #include <iostream>
 #include <windows.h>
 #include <QApplication>

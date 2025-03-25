@@ -14,7 +14,7 @@ DetectAndDraw::DetectAndDraw(const std::string& model_path) {
     }
 }
 
-cv::Mat DetectAndDraw::preprocess_image(const cv::Mat& image) {
+cv::Mat DetectAndDraw::preprocess_image(const cv::Mat& image) const {
     if (image.empty()) {
         std::cerr << "Image is empty - Error!\n";
         return {};
@@ -38,7 +38,7 @@ cv::Rect DetectAndDraw::compute_bounding_box(const float* data, float x_factor, 
 }
 
 std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv::Mat& image,
-                                                      std::vector<int>& classIds, std::vector<float>& scores) {
+                                                      std::vector<int>& classIds, std::vector<float>& scores) const {
     int numDetections = output.size[2];
     int numFeatures = output.size[1];
 

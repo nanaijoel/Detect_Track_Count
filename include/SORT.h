@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include <atomic>
+#include "Detect_And_Draw.h"
 
 extern std::mutex count_mutex;
 extern std::atomic<bool> stopThreads;

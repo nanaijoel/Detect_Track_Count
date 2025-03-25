@@ -24,7 +24,7 @@ find_package(Eigen3 REQUIRED CONFIG)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(include)
 
-# Quellen
+
 set(SOURCES
         src/main.cpp
         src/SORT.cpp
@@ -35,7 +35,6 @@ set(SOURCES
         src/GUI.cpp
 )
 
-# Header
 set(HEADERS
         include/SORT.h
         include/Detect_and_Draw.h
@@ -45,10 +44,10 @@ set(HEADERS
         include/GUI.h
 )
 
-# Executable
+
 add_executable(Sweets_Tracker_and_Counter ${SOURCES} ${HEADERS})
 
-# Libraries linken
+
 target_link_libraries(Sweets_Tracker_and_Counter
         ${OpenCV_LIBS}
         Eigen3::Eigen

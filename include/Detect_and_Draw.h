@@ -26,21 +26,21 @@ public:
                                 const std::vector<cv::Rect>& boxes,
                                 const std::vector<int>& classIds);
 
-    void reset_counts();
+    static void reset_counts();
 
 private:
     cv::dnn::Net net;
 
-    cv::Mat preprocess_image(const cv::Mat& image);
+    cv::Mat preprocess_image(const cv::Mat& image) const;
 
     std::vector<cv::Rect> parse_detections(cv::Mat& output,
                                            const cv::Mat& image,
                                            std::vector<int>& classIds,
-                                           std::vector<float>& scores);
+                                           std::vector<float>& scores) const;
 
-    cv::Rect compute_bounding_box(const float* data,
-                                  float x_factor,
-                                  float y_factor);
+    static cv::Rect compute_bounding_box(const float* data,
+                                         float x_factor,
+                                         float y_factor);
 
     const float CONF_THRESHOLD = 0.25f;
     const float NMS_THRESHOLD = 0.45f;

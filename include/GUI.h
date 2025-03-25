@@ -1,11 +1,8 @@
 #ifndef OBJECT_DETECTION_GUI_H
 #define OBJECT_DETECTION_GUI_H
 
-#include <QWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 #include <QImage>
 #include <QTimer>
 #include <QResizeEvent>
@@ -17,8 +14,7 @@ class ObjectDetectionGUI : public QWidget {
 
 public:
     explicit ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent = nullptr);
-    ~ObjectDetectionGUI() override = default;  // ✅ virtueller Destruktor
-
+    ~ObjectDetectionGUI() override = default;
     void updateFrame(const cv::Mat& frame);
 
 protected:
