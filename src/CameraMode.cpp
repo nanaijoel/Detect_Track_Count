@@ -8,6 +8,8 @@ std::mutex frame_mutex;
 
 void camera_capture(int camID) {
     cv::VideoCapture cap(camID);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1920);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
     if (!cap.isOpened()) {
         std::cerr << "Couldn't open camera - Error!\n";
         return;
