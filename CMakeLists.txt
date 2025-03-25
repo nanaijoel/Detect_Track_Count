@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(Sweets_Tracker_and_Counter)
 
 
-set(CMAKE_TOOLCHAIN_FILE "C:/Users/j.nanai/.vcpkg-clion/vcpkg_heilige_scheisse/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 
 
 set(CMAKE_CXX_STANDARD 20)
