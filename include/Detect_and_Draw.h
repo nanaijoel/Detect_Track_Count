@@ -31,7 +31,7 @@ public:
 private:
     cv::dnn::Net net;
 
-    cv::Mat preprocess_image(const cv::Mat& image) const;
+    [[nodiscard]] cv::Mat preprocess_image(const cv::Mat& image) const;
 
     std::vector<cv::Rect> parse_detections(cv::Mat& output,
                                            const cv::Mat& image,

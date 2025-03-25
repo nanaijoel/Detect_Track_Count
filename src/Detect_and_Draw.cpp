@@ -43,8 +43,8 @@ std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv:
     int numFeatures = output.size[1];
 
     cv::Mat output2D = output.reshape(1, numFeatures).t();
-    float x_factor = static_cast<float>(image.cols) / INP_WIDTH;
-    float y_factor = static_cast<float>(image.rows) / INP_HEIGHT;
+    float x_factor = static_cast<float>(image.cols) / static_cast<float>(INP_WIDTH);
+    float y_factor = static_cast<float>(image.rows) / static_cast<float>(INP_HEIGHT);
 
     std::vector<cv::Rect> boxes;
     std::vector<int> detectedClassIds;

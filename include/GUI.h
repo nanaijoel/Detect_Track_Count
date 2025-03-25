@@ -15,7 +15,7 @@ class ObjectDetectionGUI : public QWidget {
 public:
     explicit ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent = nullptr);
     ~ObjectDetectionGUI() override = default;
-    void updateFrame(const cv::Mat& frame);
+    void updateFrame(const cv::Mat& frame) const;
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -25,7 +25,8 @@ protected:
 
 private:
     void updateCounts() const;
-    QImage matToQImage(const cv::Mat& mat);
+
+    static QImage matToQImage(const cv::Mat& mat);
 
     DetectAndDraw* detector;
 
