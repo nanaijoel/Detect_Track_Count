@@ -1,20 +1,22 @@
 #ifndef CAMERA_MODE_H
 #define CAMERA_MODE_H
 
-#include <opencv2/dnn.hpp>
-#include <thread>
+#include <opencv2/opencv.hpp>
+#include <atomic>
 #include <mutex>
-#include "SORT.h"
-#include <Detect_and_Draw.h>
+#include "Detect_and_Draw.h"
+#include "Sort.h"
+
+class ObjectDetectionGUI;
+class QApplication;
 
 
-extern std::mutex frame_mutex;
-extern cv::Mat shared_frame;
 extern SORT tracker;
 
+void camera_thread(DetectAndDraw& detector, int camID, QApplication& app);
 
 void camera_capture(int camID);
-void camera_processing(cv::dnn::Net& net);
-void camera_thread(DetectAndDraw& detector, int camID);
+
+void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui);
 
 #endif // CAMERA_MODE_H

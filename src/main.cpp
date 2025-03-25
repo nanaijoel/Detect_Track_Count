@@ -4,15 +4,14 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <windows.h>
+#include <QApplication>
 #include <Eigen/Dense>
 
 
-namespace fs = std::filesystem;
-
-
-int main() {
+int main(int argc, char *argv[]) {
     SetConsoleOutputCP(CP_UTF8);
 
+    QApplication app(argc, argv);
     DetectAndDraw detector("../best.onnx");
 
     int mode;
@@ -22,9 +21,10 @@ int main() {
 
     if (mode == 1) {
         image_mode(detector, "../images/");
-    }
-    else if (mode == 2) {
-        camera_thread(detector, 0);
+        return 0;
+    } else if (mode == 2) {
+        camera_thread(detector, 0, app);
+        return 0;
     }
 
     return 0;

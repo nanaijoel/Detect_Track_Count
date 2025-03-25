@@ -1,35 +1,51 @@
 #ifndef DETECT_AND_DRAW_H
 #define DETECT_AND_DRAW_H
 
-#include <opencv2/dnn.hpp>
 #include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
+#include <map>
+#include <mutex>
 #include <vector>
+#include <string>
 
 
-constexpr float CONF_THRESHOLD = 0.70f;
-constexpr float NMS_THRESHOLD = 0.45f;
-constexpr int INP_WIDTH = 640, INP_HEIGHT = 640;
-
+extern std::map<int, int> total_counts;
+extern std::map<int, int> actual_counts;
+extern std::mutex count_mutex;
+extern cv::Mat shared_frame;
 
 class DetectAndDraw {
 public:
     explicit DetectAndDraw(const std::string& model_path);
 
-    std::vector<cv::Rect> detect_objects(const cv::Mat& frame,
-                                      std::vector<int>& class_ids,
-                                      std::vector<float>& confidences);
+    std::vector<cv::Rect> detect_objects(const cv::Mat& image,
+                                         std::vector<int>& classIds,
+                                         std::vector<float>& confidences);
 
-    static void mouse_callback(int event, int x, int y, int flags, void* userdata);
-    static void reset_counts();
-    static void draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds);
-    static cv::Mat create_info_panel(int height);
-    static cv::Mat preprocess_image(const cv::Mat& image);
-    static cv::Rect compute_bounding_box(const float* data, float x_factor, float y_factor);
+    static void draw_detections(cv::Mat& image,
+                                const std::vector<cv::Rect>& boxes,
+                                const std::vector<int>& classIds);
+
+    void reset_counts();
 
 private:
     cv::dnn::Net net;
 
-    static std::vector<cv::Rect> parse_detections(cv::Mat& output, const cv::Mat& image, std::vector<int>& classIds, std::vector<float>& scores);
+    cv::Mat preprocess_image(const cv::Mat& image);
+
+    std::vector<cv::Rect> parse_detections(cv::Mat& output,
+                                           const cv::Mat& image,
+                                           std::vector<int>& classIds,
+                                           std::vector<float>& scores);
+
+    cv::Rect compute_bounding_box(const float* data,
+                                  float x_factor,
+                                  float y_factor);
+
+    const float CONF_THRESHOLD = 0.25f;
+    const float NMS_THRESHOLD = 0.45f;
+    const int INP_WIDTH = 640;
+    const int INP_HEIGHT = 640;
 };
 
 #endif // DETECT_AND_DRAW_H

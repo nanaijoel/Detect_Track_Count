@@ -1,9 +1,10 @@
-#include <iostream>
-#include <mutex>
-#include "CameraMode.h"
 #include "Detect_And_Draw.h"
+#include <iostream>
 
-
+std::mutex count_mutex;
+std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
+std::map<int, int> actual_counts = {{0, 0}, {1, 0}, {2, 0}};
+cv::Mat shared_frame;
 
 DetectAndDraw::DetectAndDraw(const std::string& model_path) {
     net = cv::dnn::readNetFromONNX(model_path);
@@ -12,7 +13,6 @@ DetectAndDraw::DetectAndDraw(const std::string& model_path) {
         exit(-1);
     }
 }
-
 
 cv::Mat DetectAndDraw::preprocess_image(const cv::Mat& image) {
     if (image.empty()) {
@@ -27,7 +27,6 @@ cv::Mat DetectAndDraw::preprocess_image(const cv::Mat& image) {
     return blob;
 }
 
-
 cv::Rect DetectAndDraw::compute_bounding_box(const float* data, float x_factor, float y_factor) {
     float centerX = data[0] * x_factor;
     float centerY = data[1] * y_factor;
@@ -37,7 +36,6 @@ cv::Rect DetectAndDraw::compute_bounding_box(const float* data, float x_factor, 
     int top = std::max(0, static_cast<int>(centerY - height / 2));
     return {left, top, static_cast<int>(width), static_cast<int>(height)};
 }
-
 
 std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv::Mat& image,
                                                       std::vector<int>& classIds, std::vector<float>& scores) {
@@ -68,7 +66,6 @@ std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv:
     classIds = detectedClassIds;
     return boxes;
 }
-
 
 std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
                                                     std::vector<int>& classIds,
@@ -101,8 +98,6 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     return filteredBoxes;
 }
 
-
-
 void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
     for (size_t i = 0; i < boxes.size(); ++i) {
         cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 200), 3);
@@ -118,50 +113,9 @@ void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>&
     }
 }
 
-
 void DetectAndDraw::reset_counts() {
     std::lock_guard<std::mutex> lock(count_mutex);
     total_counts = {{0, 0}, {1, 0}, {2, 0}};
     actual_counts = {{0, 0}, {1, 0}, {2, 0}};
     std::cout << "[INFO] Reset Total counts!\n";
-}
-
-
-void DetectAndDraw::mouse_callback(int event, int x, int y, int flags, void* userdata) {
-
-    int frame_width = shared_frame.cols;
-
-    if (event == cv::EVENT_LBUTTONDOWN) {
-        if (x > frame_width) {
-            int adjusted_x = x - frame_width;
-            int adjusted_y = y;
-
-            if (adjusted_x >= 20 && adjusted_x <= 280 && adjusted_y >= 400 && adjusted_y <= 430) {
-                DetectAndDraw::reset_counts();
-            }
-        }
-    }
-}
-
-
-cv::Mat DetectAndDraw::create_info_panel(int height) {
-    cv::Mat info_panel(height, 300, CV_8UC3, cv::Scalar(0, 0, 0));
-    cv::putText(info_panel, "OBJECT COUNTS", cv::Point(45, 50),
-                cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 55, 255), 3);
-
-    std::lock_guard<std::mutex> lock(count_mutex);
-    for (int i = 0; i < 3; i++) {
-        std::string classname = (i == 0) ? "Bear" : (i == 1) ? "Frog" : "Cola";
-        cv::putText(info_panel, classname + " Actual: " + std::to_string(actual_counts[i]) +
-                                  " | Total: " + std::to_string(total_counts[i]),
-                    cv::Point(45, 100 + i * 50),
-                    cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
-    }
-
-    cv::rectangle(info_panel, cv::Point(15, height - 45), cv::Point(285, height - 85), cv::Scalar(255, 55, 255), -1);
-    cv::rectangle(info_panel, cv::Point(20, height - 50), cv::Point(280, height - 80), cv::Scalar(55, 55, 55), -1);
-    cv::putText(info_panel, "RESET TOTAL COUNTS", cv::Point(63, height - 60),
-                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2);
-
-    return info_panel;
 }

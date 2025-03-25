@@ -2,10 +2,8 @@
 #include <iostream>
 #include "TrackRecoveryHelper.h"
 
-std::mutex count_mutex;
 std::atomic<bool> stopThreads(false);
-std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
-std::map<int, int> actual_counts = {{0, 0}, {1, 0}, {2, 0}};
+
 
 SORT tracker;
 TrackRecoveryHelper recovery_helper;
