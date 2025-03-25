@@ -100,16 +100,16 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
 
 void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
     for (size_t i = 0; i < boxes.size(); ++i) {
-        cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 200), 3);
+        cv::rectangle(image, boxes[i], cv::Scalar(255, 0, 100), 2);
 
         std::string classname = (classIds[i] == 0) ? "Bear" : (classIds[i] == 1) ? "Frog" : "Cola";
 
         int baseLine;
-        cv::Size labelSize = cv::getTextSize(classname, cv::FONT_HERSHEY_SIMPLEX, 1.2, 3, &baseLine);
+        cv::Size labelSize = cv::getTextSize(classname, cv::FONT_HERSHEY_SIMPLEX, 1.2, 2, &baseLine);
         int textX = boxes[i].x + (boxes[i].width - labelSize.width) / 2;
         int textY = std::max(boxes[i].y - 10, labelSize.height);
 
-        cv::putText(image, classname, cv::Point(textX, textY), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(255, 0, 0), 2);
+        cv::putText(image, classname, cv::Point(textX, textY), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 0), 2);
     }
 }
 

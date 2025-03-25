@@ -13,7 +13,7 @@ ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
 
 
     auto* titleLabel = new QLabel("OBJECT COUNTS", this);
-    titleLabel->setStyleSheet("font-size: 20pt; font-weight: bold; color: white;");
+    titleLabel->setStyleSheet("font-size: 20pt; font-weight: bold; color: blue;");
     titleLabel->setAlignment(Qt::AlignCenter);
     rightLayout->addWidget(titleLabel);
     rightLayout->addSpacing(15);
