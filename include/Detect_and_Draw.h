@@ -42,10 +42,10 @@ private:
                                          float x_factor,
                                          float y_factor);
 
-    const float CONF_THRESHOLD = 0.60f;
+    const float CONF_THRESHOLD = 0.70f;
     const float NMS_THRESHOLD = 0.45f;
-    const int INP_WIDTH = 640;
-    const int INP_HEIGHT = 640;
+    const int INP_WIDTH = 960;
+    const int INP_HEIGHT = 960;
 };
 
 #endif // DETECT_AND_DRAW_H

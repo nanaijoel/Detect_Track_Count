@@ -8,8 +8,8 @@ std::mutex frame_mutex;
 
 void camera_capture(int camID) {
     cv::VideoCapture cap(camID);
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1920);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 1080);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 960);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 960);
     if (!cap.isOpened()) {
         std::cerr << "Couldn't open camera - Error!\n";
         return;
@@ -57,7 +57,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
             }, Qt::QueuedConnection);
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
