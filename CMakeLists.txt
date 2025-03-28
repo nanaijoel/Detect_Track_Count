@@ -31,7 +31,6 @@ set(SOURCES
         src/Detect_and_Draw.cpp
         src/ImageMode.cpp
         src/CameraMode.cpp
-        src/TrackRecoveryHelper.cpp
         src/GUI.cpp
 )
 
@@ -40,7 +39,6 @@ set(HEADERS
         include/Detect_and_Draw.h
         include/ImageMode.h
         include/CameraMode.h
-        include/TrackRecoveryHelper.h
         include/GUI.h
 )
 

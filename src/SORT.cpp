@@ -1,12 +1,10 @@
 #include "Sort.h"
-#include "TrackRecoveryHelper.h"
 
 
 std::atomic<bool> stopThreads(false);
 
 
 SORT tracker;
-TrackRecoveryHelper recovery_helper;
 
 SORT::Track::Track(int track_id, cv::Rect bbox, int class_id) {
     id = track_id;
@@ -55,9 +53,6 @@ void SORT::Track::update(cv::Rect new_box, int new_class, float conf) {
     last_confidence = conf;
     class_confidences[new_class].push_back(conf);
 
-    if (class_confidences[new_class].size() >= 5) {
-        stable_class = new_class;
-    }
 }
 
 void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
@@ -90,9 +85,7 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
             track.update(detected_boxes[best_match], classIds[best_match], confidences[best_match]);
             matched[best_match] = true;
         }
-        // else {
-        //     recovery_helper.store_unmatched_track(track);
-        // }
+
     }
 }
 
@@ -102,16 +95,9 @@ void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes,
                           std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
-            int reuse_id;
-            if (recovery_helper.try_recover_single(detected_boxes[i], classIds[i], confidences[i], tracks, reuse_id)) {
-                Track recovered_track(reuse_id, detected_boxes[i], classIds[i]);
-                recovered_track.last_confidence = confidences[i];
-                tracks.push_back(recovered_track);
-            } else {
                 Track new_track(next_id++, detected_boxes[i], classIds[i]);
                 new_track.last_confidence = confidences[i];
                 tracks.push_back(new_track);
-            }
         }
     }
 }
@@ -160,11 +146,10 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes,
     }
 
     match_existing_tracks(detected_boxes, classIds, confidences, matched);
-    //recovery_helper.update_missing();
-    //recovery_helper.try_recover(detected_boxes, classIds, matched, tracks);
     add_new_tracks(detected_boxes, classIds, confidences, matched);
     remove_old_tracks();
     update_counts(frame_width / 2);
+
 }
 
 std::vector<SORT::Track> SORT::get_tracks() const {
