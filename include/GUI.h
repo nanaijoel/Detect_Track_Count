@@ -18,7 +18,7 @@ public:
     void updateFrame(const cv::Mat& frame) const;
 
 protected:
-    void resizeEvent(QResizeEvent* event) override;
+    //void resizeEvent(QResizeEvent* event) override;
 
     private slots:
         void handleReset() const;

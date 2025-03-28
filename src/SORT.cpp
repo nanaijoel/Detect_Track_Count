@@ -80,7 +80,7 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
                 static_cast<float>(track.box.y - detected_boxes[i].y)
             );
 
-            if ((iou > best_iou && iou > 0.4f) || (iou > 0.2f && dist < 35.0f)) {
+            if ((iou > best_iou && iou > 0.4f) || (iou > 0.2f && dist < 45.0f)) {
                 best_iou = iou;
                 best_match = i;
             }
@@ -89,9 +89,10 @@ void SORT::match_existing_tracks(const std::vector<cv::Rect>& detected_boxes,
         if (best_match != -1) {
             track.update(detected_boxes[best_match], classIds[best_match], confidences[best_match]);
             matched[best_match] = true;
-        } else {
-            recovery_helper.store_unmatched_track(track);
         }
+        // else {
+        //     recovery_helper.store_unmatched_track(track);
+        // }
     }
 }
 
@@ -159,8 +160,8 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes,
     }
 
     match_existing_tracks(detected_boxes, classIds, confidences, matched);
-    recovery_helper.update_missing();
-    recovery_helper.try_recover(detected_boxes, classIds, matched, tracks);
+    //recovery_helper.update_missing();
+    //recovery_helper.try_recover(detected_boxes, classIds, matched, tracks);
     add_new_tracks(detected_boxes, classIds, confidences, matched);
     remove_old_tracks();
     update_counts(frame_width / 2);

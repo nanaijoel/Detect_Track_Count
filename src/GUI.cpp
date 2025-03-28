@@ -63,23 +63,23 @@ void ObjectDetectionGUI::updateFrame(const cv::Mat& frame) const {
         frameLabel->setPixmap(QPixmap::fromImage(image).scaled(
             frameLabel->size(),
             Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
+            Qt::FastTransformation
         ));
         updateCounts();
     }
 }
 
-void ObjectDetectionGUI::resizeEvent(QResizeEvent* event) {
-    QWidget::resizeEvent(event);
-    const QPixmap pix = frameLabel->pixmap();
-    if (!pix.isNull()) {
-        frameLabel->setPixmap(pix.scaled(
-            frameLabel->size(),
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
-        ));
-    }
-}
+// void ObjectDetectionGUI::resizeEvent(QResizeEvent* event) {
+//     QWidget::resizeEvent(event);
+//     const QPixmap pix = frameLabel->pixmap();
+//     if (!pix.isNull()) {
+//         frameLabel->setPixmap(pix.scaled(
+//             frameLabel->size(),
+//             Qt::KeepAspectRatio,
+//             Qt::SmoothTransformation
+//         ));
+//     }
+// }
 
 void ObjectDetectionGUI::handleReset() const {
     if (detector) {
