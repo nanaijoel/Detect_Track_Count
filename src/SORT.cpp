@@ -95,12 +95,18 @@ void SORT::add_new_tracks(const std::vector<cv::Rect>& detected_boxes,
                           std::vector<bool>& matched) {
     for (size_t i = 0; i < detected_boxes.size(); i++) {
         if (!matched[i]) {
-                Track new_track(next_id++, detected_boxes[i], classIds[i]);
-                new_track.last_confidence = confidences[i];
-                tracks.push_back(new_track);
+            Track new_track(next_id++, detected_boxes[i], classIds[i]);
+            new_track.last_confidence = confidences[i];
+            tracks.push_back(new_track);
+
+            int center_x = new_track.box.x + new_track.box.width / 2;
+            std::cout << "[DEBUG] New Track ID " << new_track.id
+                      << " (class_id: " << new_track.classId
+                      << ") created at bbox center x = " << center_x << std::endl;
         }
     }
 }
+
 
 void SORT::remove_old_tracks() {
     for (auto it = tracks.begin(); it != tracks.end();) {
@@ -149,6 +155,7 @@ void SORT::update_tracks(const std::vector<cv::Rect>& detected_boxes,
     add_new_tracks(detected_boxes, classIds, confidences, matched);
     remove_old_tracks();
     update_counts(frame_width / 2);
+
 
 }
 
