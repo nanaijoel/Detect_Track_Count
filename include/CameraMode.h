@@ -2,13 +2,10 @@
 #define CAMERA_MODE_H
 
 #include "Detect_and_Draw.h"
-#include "Sort.h"
 
 class ObjectDetectionGUI;
 class QApplication;
 
-
-extern SORT tracker;
 
 void camera_thread(DetectAndDraw& detector, int camID, QApplication& app);
 

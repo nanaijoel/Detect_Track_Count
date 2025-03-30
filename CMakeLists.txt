@@ -27,19 +27,19 @@ include_directories(include)
 
 set(SOURCES
         src/main.cpp
-        src/SORT.cpp
         src/Detect_and_Draw.cpp
         src/ImageMode.cpp
         src/CameraMode.cpp
         src/GUI.cpp
+        src/VecTracker.cpp
 )
 
 set(HEADERS
-        include/SORT.h
         include/Detect_and_Draw.h
         include/ImageMode.h
         include/CameraMode.h
         include/GUI.h
+        include/VecTracker.h
 )
 
 
