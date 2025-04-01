@@ -7,6 +7,7 @@
 
 std::mutex frame_mutex;
 std::atomic<bool> stopThreads(false);
+std::map<int, int> previous_class_counts;
 
 void camera_capture(int camID) {
     cv::VideoCapture cap(camID);
@@ -43,10 +44,11 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::vector<float> confidences;
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
 
-        // <<< NEU: zentraler Tracking-Aufruf >>>
-        std::vector<VecTracker> current_trackers = VecTracker::update_trackers(boxes, classIds, previous_trackers);
+        // === TRACKING mit Klassenzählung ===
+        std::vector<VecTracker> current_trackers =
+            VecTracker::update_trackers(boxes, classIds, previous_trackers);
 
-        // <<< extrahieren der Ergebnisse für die GUI >>>
+        // === BoundingBoxen für Zeichnen & Anzeige ===
         std::vector<cv::Rect> sorted_boxes;
         std::vector<int> sorted_classIds;
         for (const auto& t : current_trackers) {
@@ -63,6 +65,8 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
                 actual_counts[classId]++;
             }
         }
+
+        previous_trackers = current_trackers;
 
         if (gui) {
             QMetaObject::invokeMethod(gui, [frame, gui]() {
