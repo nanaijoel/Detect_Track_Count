@@ -1,4 +1,6 @@
 #include "GUI.h"
+#include "CameraMode.h"
+#include "TotalCounter.h"
 #include <QHBoxLayout>
 #include <QScreen>
 

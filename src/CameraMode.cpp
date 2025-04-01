@@ -3,11 +3,12 @@
 #include <thread>
 #include <QApplication>
 #include "GUI.h"
-#include "VecTracker.h"
+#include "TotalCounter.h"
 
 std::mutex frame_mutex;
 std::atomic<bool> stopThreads(false);
-std::map<int, int> previous_class_counts;
+TotalCounter totalCounter;
+std::map<int, int> actual_counts = {{0, 0}, {1, 0}, {2, 0}};
 
 void camera_capture(int camID) {
     cv::VideoCapture cap(camID);
@@ -30,7 +31,6 @@ void camera_capture(int camID) {
 }
 
 void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
-    std::vector<VecTracker> previous_trackers;
 
     while (!stopThreads) {
         cv::Mat frame;
@@ -44,29 +44,28 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::vector<float> confidences;
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
 
-        // === TRACKING mit Klassenzählung ===
-        std::vector<VecTracker> current_trackers =
-            VecTracker::update_trackers(boxes, classIds, previous_trackers);
+        // int frame_width = frame.cols;
 
-        // === BoundingBoxen für Zeichnen & Anzeige ===
-        std::vector<cv::Rect> sorted_boxes;
-        std::vector<int> sorted_classIds;
-        for (const auto& t : current_trackers) {
-            sorted_boxes.push_back(t.get_bounding_box());
-            sorted_classIds.push_back(t.get_class_id());
-        }
+        DetectAndDraw::draw_detections(frame, boxes, classIds);
 
-        DetectAndDraw::draw_detections(frame, sorted_boxes, sorted_classIds);
+        totalCounter.update(classIds);
 
         {
             std::lock_guard<std::mutex> lock(count_mutex);
             actual_counts.clear();
-            for (int classId : sorted_classIds) {
+            for (int id : classIds)
+                actual_counts[id]++;
+            total_counts = totalCounter.getTotalCounts();
+        }
+
+
+        {
+            std::lock_guard<std::mutex> lock(count_mutex);
+            actual_counts.clear();
+            for (int classId : classIds) {
                 actual_counts[classId]++;
             }
         }
-
-        previous_trackers = current_trackers;
 
         if (gui) {
             QMetaObject::invokeMethod(gui, [frame, gui]() {

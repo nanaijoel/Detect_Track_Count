@@ -3,6 +3,8 @@
 
 #include "Detect_and_Draw.h"
 
+extern std::map<int, int> actual_counts;
+
 class ObjectDetectionGUI;
 class QApplication;
 

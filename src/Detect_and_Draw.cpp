@@ -1,9 +1,10 @@
 #include "Detect_And_Draw.h"
 #include <iostream>
+#include "TotalCounter.h"
+#include "CameraMode.h"
 
 std::mutex count_mutex;
-std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
-std::map<int, int> actual_counts = {{0, 0}, {1, 0}, {2, 0}};
+
 cv::Mat shared_frame;
 
 DetectAndDraw::DetectAndDraw(const std::string& model_path) {

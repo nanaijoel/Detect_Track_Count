@@ -9,8 +9,6 @@
 #include <string>
 
 
-extern std::map<int, int> total_counts;
-extern std::map<int, int> actual_counts;
 extern std::mutex count_mutex;
 extern cv::Mat shared_frame;
 

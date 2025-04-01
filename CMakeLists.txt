@@ -31,7 +31,7 @@ set(SOURCES
         src/ImageMode.cpp
         src/CameraMode.cpp
         src/GUI.cpp
-        src/VecTracker.cpp
+        src/TotalCounter.cpp
 )
 
 set(HEADERS
@@ -39,7 +39,7 @@ set(HEADERS
         include/ImageMode.h
         include/CameraMode.h
         include/GUI.h
-        include/VecTracker.h
+        include/TotalCounter.h
 )
 
 
