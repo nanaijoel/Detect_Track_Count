@@ -8,7 +8,6 @@ void TotalCounter::update(const std::vector<int>& current_classIds) {
         current_counts[id]++;
     }
 
-    // === 1. Neue Objekte erkennen ===
     for (const auto& [class_id, current_count] : current_counts) {
         int previous_count = previous_counts[class_id];
 
@@ -24,7 +23,6 @@ void TotalCounter::update(const std::vector<int>& current_classIds) {
         }
     }
 
-    // === 2. Klassen entfernen, die mehrfach fehlen ===
     for (auto it = previous_counts.begin(); it != previous_counts.end(); ) {
         int class_id = it->first;
         if (!current_counts.contains(class_id)) {
@@ -41,7 +39,6 @@ void TotalCounter::update(const std::vector<int>& current_classIds) {
         ++it;
     }
 
-    // === 3. Aktualisiere bekannte Klassen ===
     for (const auto& [class_id, count] : current_counts) {
         previous_counts[class_id] = count;
     }

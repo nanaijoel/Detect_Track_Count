@@ -4,6 +4,13 @@
 #include <QApplication>
 #include "GUI.h"
 #include "TotalCounter.h"
+#include "BYTETracker.h"
+#include "STrack.h"
+#include "Rect.h"
+#include "Object.h"
+
+using namespace byte_track;
+
 
 std::mutex frame_mutex;
 std::atomic<bool> stopThreads(false);
@@ -31,6 +38,7 @@ void camera_capture(int camID) {
 }
 
 void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
+    BYTETracker tracker(30, 0.6f);  // FPS, matching threshold
 
     while (!stopThreads) {
         cv::Mat frame;
@@ -44,20 +52,29 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::vector<float> confidences;
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
 
-        // int frame_width = frame.cols;
-
         DetectAndDraw::draw_detections(frame, boxes, classIds);
 
-        totalCounter.update(classIds);
+        // === Prepare detections for ByteTrack ===
+        std::vector<Object> detections;
+        for (size_t i = 0; i < boxes.size(); ++i) {
+            const cv::Rect2f r = boxes[i];
+            Rect rect(r.x, r.y, r.width, r.height);
+            detections.emplace_back(rect, classIds[i], confidences[i]);
+        }
+
+        std::vector<byte_track::BYTETracker::STrackPtr> tracks = tracker.update(detections);
+
+        // === DEBUG: Output number of active ByteTrack tracks ===
+        std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
 
         {
             std::lock_guard<std::mutex> lock(count_mutex);
             actual_counts.clear();
             for (int id : classIds)
                 actual_counts[id]++;
-            total_counts = TotalCounter::getTotalCounts();
         }
 
+        // === GUI-Update ===
         if (gui) {
             QMetaObject::invokeMethod(gui, [frame, gui]() {
                 gui->updateFrame(frame);
@@ -67,7 +84,6 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
-
 
 void camera_thread(DetectAndDraw& detector, int camID, QApplication& app) {
     ObjectDetectionGUI gui(&detector);

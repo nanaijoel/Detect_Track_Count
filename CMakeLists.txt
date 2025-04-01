@@ -23,6 +23,7 @@ find_package(Eigen3 REQUIRED CONFIG)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(include)
+include_directories(src)
 
 
 set(SOURCES
@@ -32,6 +33,12 @@ set(SOURCES
         src/CameraMode.cpp
         src/GUI.cpp
         src/TotalCounter.cpp
+        src/BYTETracker.cpp
+        src/KalmanFilter.cpp
+        src/lapjv.cpp
+        src/Object.cpp
+        src/Rect.cpp
+        src/STrack.cpp
 )
 
 set(HEADERS
@@ -40,6 +47,12 @@ set(HEADERS
         include/CameraMode.h
         include/GUI.h
         include/TotalCounter.h
+        include/BYTETracker.h
+        include/KalmanFilter.h
+        include/lapjv.h
+        include/Object.h
+        include/Rect.h
+        include/STrack.h
 )
 
 
