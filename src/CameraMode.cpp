@@ -55,16 +55,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
             actual_counts.clear();
             for (int id : classIds)
                 actual_counts[id]++;
-            total_counts = totalCounter.getTotalCounts();
-        }
-
-
-        {
-            std::lock_guard<std::mutex> lock(count_mutex);
-            actual_counts.clear();
-            for (int classId : classIds) {
-                actual_counts[classId]++;
-            }
+            total_counts = TotalCounter::getTotalCounts();
         }
 
         if (gui) {
