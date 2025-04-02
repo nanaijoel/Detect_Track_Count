@@ -16,10 +16,9 @@ void TotalCounter::update(const std::vector<byte_track::BYTETracker::STrackPtr>&
         int id = static_cast<int>(track->getTrackId());
         int class_id = track->getClassId();
 
-        if (counted_ids.find(id) == counted_ids.end()) {
+        if (!counted_ids.contains(id)) {
             total_counts[class_id]++;
             counted_ids.insert(id);
-            std::cout << "[ZÄHLUNG] Class " << class_id << ", ID " << id << " → gezählt!\n";
         }
     }
 }

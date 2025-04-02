@@ -40,7 +40,7 @@ private:
                                          float x_factor,
                                          float y_factor);
 
-    const float CONF_THRESHOLD = 0.70f;
+    const float CONF_THRESHOLD = 0.50f;
     const float NMS_THRESHOLD = 0.45f;
     const int INP_WIDTH = 960;
     const int INP_HEIGHT = 960;

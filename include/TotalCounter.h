@@ -12,11 +12,7 @@ public:
     void update(const std::vector<std::shared_ptr<class byte_track::STrack>>& tracks);
 
 private:
-    std::unordered_map<int, int> id_to_class;
-    std::unordered_map<int, int> id_stability;
-    std::set<int> already_counted_ids;
     std::unordered_set<size_t> counted_ids;
-    int min_frames_to_count = 5;
+    int min_frames_to_count = 3;
 
-    const int stability_threshold = 5; // z. B. 5 Frames
 };

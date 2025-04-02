@@ -20,11 +20,9 @@ std::map<int, int> actual_counts = {{0, 0}, {1, 0}, {2, 0}};
 void camera_capture(int camID) {
     cv::VideoCapture cap(camID);
     //cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G'));
-    cap.set(cv::CAP_PROP_FRAME_WIDTH, 960);
-    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 960);
-    cap.set(cv::CAP_PROP_FPS, 30);
-    //
-    // // Nach Öffnen auslesen:
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 1024);
+    //cap.set(cv::CAP_PROP_FPS, 30);
     // std::cout << "[INFO] CAP_PROP_FPS: " << cap.get(cv::CAP_PROP_FPS) << std::endl;
     // std::cout << "[INFO] FOURCC: " << int(cap.get(cv::CAP_PROP_FOURCC)) << std::endl;
 
