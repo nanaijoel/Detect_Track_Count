@@ -17,7 +17,7 @@ enum class STrackState {
 class STrack
 {
 public:
-    STrack(const Rect<float>& rect, const float& score);
+    STrack(const Rect<float>& rect, const float& score, int class_id);
     ~STrack();
 
     const Rect<float>& getRect() const;
@@ -29,6 +29,8 @@ public:
     const size_t& getFrameId() const;
     const size_t& getStartFrameId() const;
     const size_t& getTrackletLength() const;
+    int getClassId() const;
+    int class_id_;
 
     void activate(const size_t& frame_id, const size_t& track_id);
     void reActivate(const STrack &new_track, const size_t &frame_id, const int &new_track_id = -1);

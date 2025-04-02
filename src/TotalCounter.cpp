@@ -1,49 +1,26 @@
 #include "TotalCounter.h"
+#include "STrack.h"
+#include <set>
+#include <iostream>
 
+std::set<size_t> counted_ids;
 std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
 
-void TotalCounter::update(const std::vector<int>& current_classIds) {
-    std::map<int, int> current_counts;
-    for (int id : current_classIds) {
-        current_counts[id]++;
-    }
+void TotalCounter::update(const std::vector<byte_track::BYTETracker::STrackPtr>& tracks)
+{
+    for (const auto& track : tracks) {
+        if (!track->isActivated()) continue;
+        if (track->getSTrackState() != byte_track::STrackState::Tracked) continue;
+        if (track->getTrackletLength() < min_frames_to_count) continue;
 
-    for (const auto& [class_id, current_count] : current_counts) {
-        int previous_count = previous_counts[class_id];
+        int id = static_cast<int>(track->getTrackId());
+        int class_id = track->getClassId();
 
-        if (current_count > previous_count) {
-            frame_stability[class_id]++;
-            if (frame_stability[class_id] >= stability_threshold) {
-                int delta = current_count - previous_count;
-                total_counts[class_id] += delta;
-                frame_stability[class_id] = 0;
-            }
-        } else {
-            frame_stability[class_id] = 0;
+        if (counted_ids.find(id) == counted_ids.end()) {
+            total_counts[class_id]++;
+            counted_ids.insert(id);
+            std::cout << "[ZÄHLUNG] Class " << class_id << ", ID " << id << " → gezählt!\n";
         }
-    }
-
-    for (auto it = previous_counts.begin(); it != previous_counts.end(); ) {
-        int class_id = it->first;
-        if (!current_counts.contains(class_id)) {
-            disappearance_counter[class_id]++;
-            if (disappearance_counter[class_id] >= disappearance_threshold) {
-                it = previous_counts.erase(it);
-                frame_stability.erase(class_id);
-                disappearance_counter.erase(class_id);
-                continue;
-            }
-        } else {
-            disappearance_counter[class_id] = 0;
-        }
-        ++it;
-    }
-
-    for (const auto& [class_id, count] : current_counts) {
-        previous_counts[class_id] = count;
     }
 }
 
-const std::map<int, int>& TotalCounter::getTotalCounts() {
-    return total_counts;
-}
