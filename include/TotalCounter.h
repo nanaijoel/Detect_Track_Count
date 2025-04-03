@@ -13,6 +13,6 @@ public:
 
 private:
     std::unordered_set<size_t> counted_ids;
-    int min_frames_to_count = 3;
+    int min_frames_to_count = 2;
 
 };

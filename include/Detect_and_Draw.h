@@ -42,8 +42,8 @@ private:
 
     const float CONF_THRESHOLD = 0.50f;
     const float NMS_THRESHOLD = 0.45f;
-    const int INP_WIDTH = 960;
-    const int INP_HEIGHT = 960;
+    const int INP_WIDTH = 640;
+    const int INP_HEIGHT = 640;
 };
 
 #endif // DETECT_AND_DRAW_H

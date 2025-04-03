@@ -16,7 +16,7 @@ byte_track::BYTETracker::BYTETracker(const int& frame_rate,
     track_thresh_(track_thresh),
     high_thresh_(high_thresh),
     match_thresh_(match_thresh),
-    max_time_lost_(static_cast<size_t>(frame_rate / 30.0 * track_buffer)),
+    max_time_lost_(static_cast<size_t>(frame_rate / 10.0 * track_buffer)),
     frame_id_(0),
     track_id_count_(0)
 {

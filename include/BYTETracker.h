@@ -17,8 +17,8 @@ class BYTETracker
 public:
     using STrackPtr = std::shared_ptr<STrack>;
 
-    BYTETracker(const int& frame_rate = 30,
-                const int& track_buffer = 30,
+    BYTETracker(const int& frame_rate = 10,
+                const int& track_buffer = 10,
                 const float& track_thresh = 0.5,
                 const float& high_thresh = 0.6,
                 const float& match_thresh = 0.8);

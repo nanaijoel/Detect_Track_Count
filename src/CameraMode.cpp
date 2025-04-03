@@ -39,7 +39,7 @@ void camera_capture(int camID) {
         std::lock_guard<std::mutex> lock(frame_mutex);
         shared_frame = frame.clone();
 
-        // // in camera_processing():
+        // in camera_processing():
         // static int frame_count = 0;
         // static auto last_time = std::chrono::steady_clock::now();
         //
@@ -60,7 +60,7 @@ void camera_capture(int camID) {
 }
 
 void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
-    BYTETracker tracker(20, 60);
+    BYTETracker tracker(10, 30);
 
     while (!stopThreads) {
         cv::Mat frame;
@@ -72,9 +72,21 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
 
         std::vector<int> classIds;
         std::vector<float> confidences;
+
+        // static int frame_count = 0;
+        // static auto last_time = std::chrono::steady_clock::now();
+        //
+        // frame_count++;
+        // auto now = std::chrono::steady_clock::now();
+
         std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
 
         DetectAndDraw::draw_detections(frame, boxes, classIds);
+
+        // double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_time).count();
+        // std::cout << "Vergangene Zeit für CNN: " << elapsed << std::endl;
+        // frame_count = 0;
+        // last_time = now;
 
         // === Prepare detections for ByteTrack ===
         std::vector<Object> detections;
@@ -89,7 +101,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::vector<byte_track::BYTETracker::STrackPtr> tracks = tracker.update(detections);
 
         // === DEBUG: Output number of active ByteTrack tracks ===
-        //std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
+        std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
         totalCounter.update(tracks);
 
         {

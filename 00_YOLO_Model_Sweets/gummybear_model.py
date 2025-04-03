@@ -4,4 +4,4 @@ from ultralytics import YOLO
 model = YOLO("yolov8s.pt")
 
 # Start training
-model.train(data="gummybears/config.yaml", epochs=50, imgsz=960)
+model.train(data="gummybears/config.yaml", epochs=50, imgsz=640)
