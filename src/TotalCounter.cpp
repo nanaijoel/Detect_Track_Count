@@ -5,7 +5,7 @@
 std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
 
 constexpr int HISTORY_LENGTH = 5;
-constexpr int CLASS_STABILITY_THRESHOLD = 5;
+constexpr int CLASS_STABILITY_THRESHOLD = 3;
 
 void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks, int scanLineX)
 {
@@ -26,16 +26,13 @@ void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>
         bool is_crossing = (left_x <= scanLineX && right_x >= scanLineX);
         bool was = history_map[track_id].was_crossing;
 
-        // Klassenhistorie updaten
         auto& history = history_map[track_id].recent_classes;
         history.push_back(class_id);
         if (history.size() > HISTORY_LENGTH)
             history.pop_front();
 
-        // Zähllogik
         if (is_crossing && !was)
         {
-            // Prüfen, ob die Klasse stabil ist
             std::map<int, int> class_counter;
             for (int cid : history) class_counter[cid]++;
             int most_common_class = -1;
