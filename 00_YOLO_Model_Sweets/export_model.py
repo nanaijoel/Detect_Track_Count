@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 # Load model
-model = YOLO("runs/detect/train5/weights/best.pt")
+model = YOLO("train3/weights/best.pt")
 
 # Export ONNX model for OpenCV
 model.export(format="onnx")
