@@ -5,6 +5,8 @@
 #include <mutex>
 #include <memory>
 #include <vector>
+#include <deque>
+
 
 namespace byte_track {
     class BYTETracker;
@@ -13,6 +15,12 @@ namespace byte_track {
 
 
 extern std::map<int, int> total_counts;
+
+
+struct TrackHistory {
+    std::deque<int> recent_classes;
+    bool was_crossing = false;
+};
 
 class TotalCounter {
 public:
@@ -24,4 +32,6 @@ private:
     std::set<int> active_ids;  // IDs, die aktuell über die Linie sind
     std::map<int, bool> was_crossing;
     mutable std::mutex mutex;
+    std::map<int, TrackHistory> history_map;
+
 };

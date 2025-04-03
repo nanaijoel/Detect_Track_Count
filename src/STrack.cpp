@@ -92,6 +92,7 @@ void byte_track::STrack::reActivate(const STrack &new_track, const size_t &frame
     state_ = STrackState::Tracked;
     is_activated_ = true;
     score_ = new_track.getScore();
+    class_id_ = new_track.getClassId();
     if (0 <= new_track_id)
     {
         track_id_ = new_track_id;
@@ -118,6 +119,7 @@ void byte_track::STrack::update(const STrack &new_track, const size_t &frame_id)
     state_ = STrackState::Tracked;
     is_activated_ = true;
     score_ = new_track.getScore();
+    class_id_ = new_track.getClassId();
     frame_id_ = frame_id;
     tracklet_len_++;
 }
