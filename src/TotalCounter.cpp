@@ -1,6 +1,6 @@
 #include "TotalCounter.h"
 #include "STrack.h"
-#include <iostream>
+
 
 std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
 
@@ -56,5 +56,20 @@ void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>
         }
 
         history_map[track_id].was_crossing = is_crossing;
+    }
+    std::set<int> current_ids;
+    for (const auto& track : tracks) {
+        if (track->isActivated() && track->getSTrackState() == byte_track::STrackState::Tracked) {
+            current_ids.insert(static_cast<int>(track->getTrackId()));
+        }
+    }
+
+    // Remove inactive IDs for memory management on longer runs
+    for (auto it = history_map.begin(); it != history_map.end(); ) {
+        if (!current_ids.contains(it->first)) {
+            it = history_map.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
