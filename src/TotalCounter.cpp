@@ -1,5 +1,5 @@
 #include "TotalCounter.h"
-#include "STrack.h"
+#include "BYTETracker/STrack.h"
 
 
 std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};

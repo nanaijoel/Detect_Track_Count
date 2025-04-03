@@ -1,13 +1,14 @@
-#include "CameraMode.h"
-#include "Detect_and_Draw.h"
 #include <thread>
 #include <QApplication>
+#include <chrono>
 #include "GUI.h"
 #include "TotalCounter.h"
-#include "BYTETracker.h"
-#include "Rect.h"
-#include "Object.h"
-#include <chrono>
+#include "BYTETracker/BYTETracker.h"
+#include "BYTETracker/Rect.h"
+#include "BYTETracker/Object.h"
+#include "CameraMode.h"
+#include "Detect_and_Draw.h"
+
 
 using namespace byte_track;
 

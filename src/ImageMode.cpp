@@ -1,8 +1,9 @@
-#include "ImageMode.h"
-#include "Detect_and_Draw.h"
 #include <opencv2/opencv.hpp>
 #include <filesystem>
 #include <iostream>
+#include "ImageMode.h"
+#include "Detect_and_Draw.h"
+
 
 namespace fs = std::filesystem;
 

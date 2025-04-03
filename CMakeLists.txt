@@ -33,12 +33,12 @@ set(SOURCES
         src/CameraMode.cpp
         src/GUI.cpp
         src/TotalCounter.cpp
-        src/BYTETracker.cpp
-        src/KalmanFilter.cpp
-        src/lapjv.cpp
-        src/Object.cpp
-        src/Rect.cpp
-        src/STrack.cpp
+        src/BYTETracker/BYTETracker.cpp
+        src/BYTETracker/KalmanFilter.cpp
+        src/BYTETracker/lapjv.cpp
+        src/BYTETracker/Object.cpp
+        src/BYTETracker/Rect.cpp
+        src/BYTETracker/STrack.cpp
 )
 
 set(HEADERS
@@ -47,12 +47,12 @@ set(HEADERS
         include/CameraMode.h
         include/GUI.h
         include/TotalCounter.h
-        include/BYTETracker.h
-        include/KalmanFilter.h
-        include/lapjv.h
-        include/Object.h
-        include/Rect.h
-        include/STrack.h
+        include/BYTETracker/BYTETracker.h
+        include/BYTETracker/KalmanFilter.h
+        include/BYTETracker/lapjv.h
+        include/BYTETracker/Object.h
+        include/BYTETracker/Rect.h
+        include/BYTETracker/STrack.h
 )
 
 

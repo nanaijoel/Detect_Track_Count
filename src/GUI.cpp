@@ -1,8 +1,9 @@
+#include <QHBoxLayout>
+#include <QScreen>
 #include "GUI.h"
 #include "CameraMode.h"
 #include "TotalCounter.h"
-#include <QHBoxLayout>
-#include <QScreen>
+
 
 ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
     : QWidget(parent), detector(detector), actualCountLabels{nullptr}, totalCountLabels{nullptr} {

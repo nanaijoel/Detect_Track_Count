@@ -1,10 +1,10 @@
-#include "Detect_and_Draw.h"
-#include "ImageMode.h"
-#include "CameraMode.h"
 #include <iostream>
 #include <windows.h>
 #include <QApplication>
 #include <Eigen/Dense>
+#include "Detect_and_Draw.h"
+#include "ImageMode.h"
+#include "CameraMode.h"
 
 
 int main(int argc, char *argv[]) {
