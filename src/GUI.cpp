@@ -1,10 +1,12 @@
 #include <QHBoxLayout>
-#include <QScreen>
+//#include <QScreen>
 #include "GUI.h"
 #include "CameraMode.h"
 #include "TotalCounter.h"
+//#include <QStandardItemModel>
+#include <QStandardItem>
 
-std::vector<int> active_classes = {0, 1, 2};  // default: alle
+std::vector<int> active_classes = {0, 1, 2};  // default: all
 
 ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
     : QWidget(parent), detector(detector), actualCountLabels{nullptr}, totalCountLabels{nullptr} {
@@ -45,16 +47,24 @@ ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
 
     rightLayout->addSpacing(30);
 
-    // ComboBox zur Klassenauswahl
     classSelector = new QComboBox(this);
-    classSelector->addItem("Detect All");
-    classSelector->addItem("Only Bears");
-    classSelector->addItem("Only Frogs");
-    classSelector->addItem("Only Colas");
-    classSelector->setStyleSheet(QString("font-size: %1pt;").arg(buttonFontSize));
-    connect(classSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &ObjectDetectionGUI::handleClassSelection);
+    classSelector->addItems({"Detect All", "Only Bears", "Only Frogs", "Only Colas"});
+    classSelector->setStyleSheet(QString(
+        "QComboBox { font-size: %1pt; color: white; background-color: black; }"
+    ).arg(buttonFontSize));
+
+    // Text zentralized:
+    auto model = qobject_cast<QStandardItemModel*>(classSelector->model());
+    for (int i = 0; i < classSelector->count(); ++i) {
+        if (QStandardItem* item = model->item(i)) item->setTextAlignment(Qt::AlignCenter);
+    }
+
+    connect(classSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleClassSelection(int)));
     rightLayout->addWidget(classSelector);
+    rightLayout->setAlignment(classSelector, Qt::AlignCenter);
+
+
+    rightLayout->addSpacing(30);
 
     resetButton = new QPushButton("Reset Total Counts", this);
     resetButton->setStyleSheet(QString("font-size: %1pt; padding: 6px; border: 2px solid white; color: white;").arg(buttonFontSize));
@@ -96,6 +106,7 @@ void ObjectDetectionGUI::handleClassSelection(int index) {
         case 1: active_classes = {0}; break;
         case 2: active_classes = {1}; break;
         case 3: active_classes = {2}; break;
+        default: ;
     }
 }
 

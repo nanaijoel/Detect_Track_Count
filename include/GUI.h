@@ -23,7 +23,8 @@ public:
 
     private slots:
         void handleReset() const;
-    void handleClassSelection(int index);
+
+    static void handleClassSelection(int index);
 
 private:
     void updateCounts() const;

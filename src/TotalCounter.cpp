@@ -5,7 +5,7 @@
 std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
 
 constexpr int HISTORY_LENGTH = 5;
-constexpr int CLASS_STABILITY_THRESHOLD = 3;
+constexpr int CLASS_STABILITY_THRESHOLD = 2;
 
 void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks, int scanLineX, const std::vector<int>& filter_classes)
 {
