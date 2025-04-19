@@ -4,6 +4,7 @@
 #include "CameraMode.h"
 #include "TotalCounter.h"
 
+std::vector<int> active_classes = {0, 1, 2};  // default: alle
 
 ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
     : QWidget(parent), detector(detector), actualCountLabels{nullptr}, totalCountLabels{nullptr} {
@@ -44,6 +45,17 @@ ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
 
     rightLayout->addSpacing(30);
 
+    // ComboBox zur Klassenauswahl
+    classSelector = new QComboBox(this);
+    classSelector->addItem("Detect All");
+    classSelector->addItem("Only Bears");
+    classSelector->addItem("Only Frogs");
+    classSelector->addItem("Only Colas");
+    classSelector->setStyleSheet(QString("font-size: %1pt;").arg(buttonFontSize));
+    connect(classSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &ObjectDetectionGUI::handleClassSelection);
+    rightLayout->addWidget(classSelector);
+
     resetButton = new QPushButton("Reset Total Counts", this);
     resetButton->setStyleSheet(QString("font-size: %1pt; padding: 6px; border: 2px solid white; color: white;").arg(buttonFontSize));
     resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -72,21 +84,18 @@ void ObjectDetectionGUI::updateFrame(const cv::Mat& frame) const {
     }
 }
 
-// void ObjectDetectionGUI::resizeEvent(QResizeEvent* event) {
-//     QWidget::resizeEvent(event);
-//     const QPixmap pix = frameLabel->pixmap();
-//     if (!pix.isNull()) {
-//         frameLabel->setPixmap(pix.scaled(
-//             frameLabel->size(),
-//             Qt::KeepAspectRatio,
-//             Qt::SmoothTransformation
-//         ));
-//     }
-// }
-
 void ObjectDetectionGUI::handleReset() const {
     if (detector) {
         DetectAndDraw::reset_counts();
+    }
+}
+
+void ObjectDetectionGUI::handleClassSelection(int index) {
+    switch (index) {
+        case 0: active_classes = {0, 1, 2}; break;
+        case 1: active_classes = {0}; break;
+        case 2: active_classes = {1}; break;
+        case 3: active_classes = {2}; break;
     }
 }
 

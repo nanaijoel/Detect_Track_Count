@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "Detect_And_Draw.h"
 #include "TotalCounter.h"
 #include "CameraMode.h"
@@ -70,7 +71,9 @@ std::vector<cv::Rect> DetectAndDraw::parse_detections(cv::Mat& output, const cv:
 
 std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
                                                     std::vector<int>& classIds,
-                                                    std::vector<float>& confidences) {
+                                                    std::vector<float>& confidences,
+                                                    const std::vector<int>& filter_classes)
+{
     cv::Mat blob = preprocess_image(image);
     if (blob.empty()) return {};
 
@@ -80,7 +83,6 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     std::vector<float> scores;
     std::vector<cv::Rect> boxes = parse_detections(output, image, classIds, scores);
 
-    // Non-Maximum Suppression (NMS)
     std::vector<int> indices;
     cv::dnn::NMSBoxes(boxes, scores, CONF_THRESHOLD, NMS_THRESHOLD, indices);
 
@@ -89,15 +91,19 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     std::vector<float> filteredConfidences;
 
     for (int idx : indices) {
-        filteredBoxes.push_back(boxes[idx]);
-        filteredClassIds.push_back(classIds[idx]);
-        filteredConfidences.push_back(scores[idx]);
+        if (filter_classes.empty() ||
+            std::find(filter_classes.begin(), filter_classes.end(), classIds[idx]) != filter_classes.end()) {
+            filteredBoxes.push_back(boxes[idx]);
+            filteredClassIds.push_back(classIds[idx]);
+            filteredConfidences.push_back(scores[idx]);
+            }
     }
 
     classIds = filteredClassIds;
     confidences = filteredConfidences;
     return filteredBoxes;
 }
+
 
 void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
     for (size_t i = 0; i < boxes.size(); ++i) {

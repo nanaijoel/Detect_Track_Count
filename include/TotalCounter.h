@@ -24,7 +24,8 @@ struct TrackHistory {
 
 class TotalCounter {
 public:
-    void update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks, int scanLineX);
+    void update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks, int scanLineX,
+        const std::vector<int>& filter_classes);
 
     std::map<int, int> getCounts() const;
 

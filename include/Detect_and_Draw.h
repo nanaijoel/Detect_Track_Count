@@ -17,7 +17,9 @@ public:
 
     std::vector<cv::Rect> detect_objects(const cv::Mat& image,
                                          std::vector<int>& classIds,
-                                         std::vector<float>& confidences);
+                                         std::vector<float>& confidences,
+                                         const std::vector<int>& filter_classes);
+
 
     static void draw_detections(cv::Mat& image,
                                 const std::vector<cv::Rect>& boxes,

@@ -3,11 +3,15 @@
 
 #include <QLabel>
 #include <QPushButton>
+#include <QComboBox>
 #include <QImage>
 #include <QTimer>
 #include <QResizeEvent>
 #include <opencv2/opencv.hpp>
 #include "Detect_and_Draw.h"
+
+// Neue globale Variable zur Klassenauswahl
+extern std::vector<int> active_classes;
 
 class ObjectDetectionGUI : public QWidget {
     Q_OBJECT
@@ -17,15 +21,12 @@ public:
     ~ObjectDetectionGUI() override = default;
     void updateFrame(const cv::Mat& frame) const;
 
-protected:
-    //void resizeEvent(QResizeEvent* event) override;
-
     private slots:
         void handleReset() const;
+    void handleClassSelection(int index);
 
 private:
     void updateCounts() const;
-
     static QImage matToQImage(const cv::Mat& mat);
 
     DetectAndDraw* detector;
@@ -34,6 +35,7 @@ private:
     QLabel* actualCountLabels[3];
     QLabel* totalCountLabels[3];
     QPushButton* resetButton;
+    QComboBox* classSelector;
 };
 
 #endif // OBJECT_DETECTION_GUI_H

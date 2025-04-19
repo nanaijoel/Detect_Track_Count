@@ -1,6 +1,7 @@
 #include <thread>
 #include <QApplication>
 #include <chrono>
+
 #include "GUI.h"
 #include "TotalCounter.h"
 #include "BYTETracker/BYTETracker.h"
@@ -80,7 +81,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         // frame_count++;
         // auto now = std::chrono::steady_clock::now();
 
-        std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences);
+        std::vector<cv::Rect> boxes = detector.detect_objects(frame, classIds, confidences, active_classes);
 
         DetectAndDraw::draw_detections(frame, boxes, classIds);
 
@@ -102,10 +103,10 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
         std::vector<byte_track::BYTETracker::STrackPtr> tracks = tracker.update(detections);
 
         // === DEBUG: Output number of active ByteTrack tracks ===
-        std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
+        // std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
         int scanline_x = frame.cols / 2;
 
-        totalCounter.update(tracks,scanline_x);
+        totalCounter.update(tracks,scanline_x, active_classes);
 
         {
             std::lock_guard<std::mutex> lock(count_mutex);
