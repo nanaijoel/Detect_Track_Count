@@ -7,9 +7,17 @@ std::map<int, int> total_counts = {{0, 0}, {1, 0}, {2, 0}};
 constexpr int HISTORY_LENGTH = 5;
 constexpr int CLASS_STABILITY_THRESHOLD = 2;
 
-void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks, int scanLineX, const std::vector<int>& filter_classes)
+void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>& tracks,
+                          int scanLineX,
+                          const std::vector<int>& filter_classes)
 {
     std::lock_guard<std::mutex> lock(mutex);
+
+    // Fast-path: prüfen, ob alle Klassen erlaubt sind
+    bool all_classes_allowed = (filter_classes.size() == 3 &&
+                                std::ranges::find(filter_classes, 0) != filter_classes.end() &&
+                                std::ranges::find(filter_classes, 1) != filter_classes.end() &&
+                                std::ranges::find(filter_classes, 2) != filter_classes.end());
 
     for (const auto& track : tracks)
     {
@@ -20,11 +28,10 @@ void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>
         int track_id = static_cast<int>(track->getTrackId());
         int class_id = track->getClassId();
 
-        if (!filter_classes.empty() &&
+        if (!all_classes_allowed &&
             std::ranges::find(filter_classes, class_id) == filter_classes.end()) {
             continue;
-            }
-
+        }
 
         int left_x = static_cast<int>(box.tl_x());
         int right_x = static_cast<int>(box.br_x());
@@ -76,6 +83,7 @@ void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>
         }
     }
 }
+
 
 std::map<int, int> TotalCounter::getCounts() const
 {

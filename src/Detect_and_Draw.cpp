@@ -90,9 +90,15 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     std::vector<int> filteredClassIds;
     std::vector<float> filteredConfidences;
 
+    // Schneller Check: sind alle Klassen erlaubt?
+    bool all_classes_allowed = (filter_classes.size() == 3 &&
+                                std::ranges::find(filter_classes, 0) != filter_classes.end() &&
+                                std::ranges::find(filter_classes, 1) != filter_classes.end() &&
+                                std::ranges::find(filter_classes, 2) != filter_classes.end());
+
     for (int idx : indices) {
-        if (filter_classes.empty() ||
-            std::find(filter_classes.begin(), filter_classes.end(), classIds[idx]) != filter_classes.end()) {
+        if (all_classes_allowed ||
+            std::ranges::find(filter_classes, classIds[idx]) != filter_classes.end()) {
             filteredBoxes.push_back(boxes[idx]);
             filteredClassIds.push_back(classIds[idx]);
             filteredConfidences.push_back(scores[idx]);
@@ -103,6 +109,7 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     confidences = filteredConfidences;
     return filteredBoxes;
 }
+
 
 
 void DetectAndDraw::draw_detections(cv::Mat& image, const std::vector<cv::Rect>& boxes, const std::vector<int>& classIds) {
