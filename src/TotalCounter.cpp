@@ -13,7 +13,6 @@ void TotalCounter::update(const std::vector<std::shared_ptr<byte_track::STrack>>
 {
     std::lock_guard<std::mutex> lock(mutex);
 
-    // Fast-path: prüfen, ob alle Klassen erlaubt sind
     bool all_classes_allowed = (filter_classes.size() == 3 &&
                                 std::ranges::find(filter_classes, 0) != filter_classes.end() &&
                                 std::ranges::find(filter_classes, 1) != filter_classes.end() &&

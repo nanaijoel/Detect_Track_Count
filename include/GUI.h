@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include "Detect_and_Draw.h"
 
-// Globale Variable zur Klassenauswahl
+
 extern std::vector<int> active_classes;
 
 class ObjectDetectionGUI : public QWidget {

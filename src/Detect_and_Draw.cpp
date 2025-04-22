@@ -90,7 +90,6 @@ std::vector<cv::Rect> DetectAndDraw::detect_objects(const cv::Mat& image,
     std::vector<int> filteredClassIds;
     std::vector<float> filteredConfidences;
 
-    // Schneller Check: sind alle Klassen erlaubt?
     bool all_classes_allowed = (filter_classes.size() == 3 &&
                                 std::ranges::find(filter_classes, 0) != filter_classes.end() &&
                                 std::ranges::find(filter_classes, 1) != filter_classes.end() &&

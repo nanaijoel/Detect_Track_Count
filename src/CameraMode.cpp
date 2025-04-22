@@ -102,7 +102,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
 
         std::vector<byte_track::BYTETracker::STrackPtr> tracks = tracker.update(detections);
 
-        // === DEBUG: Output number of active ByteTrack tracks ===
+        // DEBUG: Output number of active ByteTrack tracks
         // std::cout << "[ByteTrack] Active tracks: " << tracks.size() << std::endl;
         int scanline_x = frame.cols / 2;
 
@@ -115,7 +115,7 @@ void camera_processing(DetectAndDraw& detector, ObjectDetectionGUI* gui) {
                 actual_counts[id]++;
         }
 
-        // === GUI-Update ===
+
         if (gui) {
             cv::line(frame, cv::Point(scanline_x, 0), cv::Point(scanline_x, frame.rows), cv::Scalar(0, 255, 255), 2);
             QMetaObject::invokeMethod(gui, [frame, gui]() {

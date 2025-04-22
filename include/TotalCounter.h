@@ -30,7 +30,7 @@ public:
     std::map<int, int> getCounts() const;
 
 private:
-    std::set<int> active_ids;  // IDs, die aktuell über die Linie sind
+    std::set<int> active_ids;
     std::map<int, bool> was_crossing;
     mutable std::mutex mutex;
     std::map<int, TrackHistory> history_map;
