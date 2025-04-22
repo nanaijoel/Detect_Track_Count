@@ -25,6 +25,9 @@ int main(int argc, char *argv[]) {
         camera_thread(detector, 0, app);
         return 0;
     }
+    else {
+        std::cerr << "Invalid mode entered!" << std::endl;
+        return 1;
+    }
 
-    return 0;
 }
