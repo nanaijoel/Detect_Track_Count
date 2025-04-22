@@ -1,16 +1,31 @@
-#include <QHBoxLayout>
+//#include <QHBoxLayout>
 //#include <QScreen>
+//#include <QStandardItemModel>
+//#include <QGuiApplication>
+#include <QStandardItem>
+#include <QScreen>
 #include "GUI.h"
 #include "CameraMode.h"
 #include "TotalCounter.h"
-//#include <QStandardItemModel>
-#include <QStandardItem>
+
+
 
 std::vector<int> active_classes = {0, 1, 2};  // default: all
 
 ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
-    : QWidget(parent), detector(detector), actualCountLabels{nullptr}, totalCountLabels{nullptr} {
+    : QWidget(parent),
+      detector(detector),
+      frameLabel(nullptr),
+      actualCountLabels{nullptr},
+      totalCountLabels{nullptr},
+      resetButton(nullptr),
+      classSelector(nullptr)
+{
+    setupLayout();
+}
 
+
+void ObjectDetectionGUI::setupLayout() {
     int screenHeight = QGuiApplication::primaryScreen()->size().height();
     int titleFontSize = screenHeight / 40;
     int labelFontSize = screenHeight / 55;
@@ -21,57 +36,10 @@ ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
     frameLabel->setAlignment(Qt::AlignCenter);
 
     auto* rightLayout = new QVBoxLayout;
-
-    auto* titleLabel = new QLabel("OBJECT COUNTS", this);
-    titleLabel->setStyleSheet(QString("font-size: %1pt; font-weight: bold; color: blue;").arg(titleFontSize));
-    titleLabel->setAlignment(Qt::AlignCenter);
-    rightLayout->addWidget(titleLabel);
-    rightLayout->addSpacing(15);
-
-    QString classes[3] = {"Bear", "Frog", "Cola"};
-    for (int i = 0; i < 3; ++i) {
-        actualCountLabels[i] = new QLabel(QString("%1 Actual: 0").arg(classes[i]), this);
-        actualCountLabels[i]->setStyleSheet(QString("font-size: %1pt; color: cyan;").arg(labelFontSize));
-        actualCountLabels[i]->setAlignment(Qt::AlignCenter);
-        rightLayout->addWidget(actualCountLabels[i]);
-    }
-
-    rightLayout->addSpacing(30);
-
-    for (int i = 0; i < 3; ++i) {
-        totalCountLabels[i] = new QLabel(QString("%1 Total: 0").arg(classes[i]), this);
-        totalCountLabels[i]->setStyleSheet(QString("font-size: %1pt; color: lightblue;").arg(labelFontSize));
-        totalCountLabels[i]->setAlignment(Qt::AlignCenter);
-        rightLayout->addWidget(totalCountLabels[i]);
-    }
-
-    rightLayout->addSpacing(30);
-
-    classSelector = new QComboBox(this);
-    classSelector->addItems({"Detect All", "Only Bears", "Only Frogs", "Only Colas"});
-    classSelector->setStyleSheet(QString(
-        "QComboBox { font-size: %1pt; color: white; background-color: black; }"
-    ).arg(buttonFontSize));
-
-    // Text zentralized:
-    auto model = qobject_cast<QStandardItemModel*>(classSelector->model());
-    for (int i = 0; i < classSelector->count(); ++i) {
-        if (QStandardItem* item = model->item(i)) item->setTextAlignment(Qt::AlignCenter);
-    }
-
-    connect(classSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleClassSelection(int)));
-    rightLayout->addWidget(classSelector);
-    rightLayout->setAlignment(classSelector, Qt::AlignCenter);
-
-
-    rightLayout->addSpacing(30);
-
-    resetButton = new QPushButton("Reset Total Counts", this);
-    resetButton->setStyleSheet(QString("font-size: %1pt; padding: 6px; border: 2px solid white; color: white;").arg(buttonFontSize));
-    resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    connect(resetButton, SIGNAL(clicked()), this, SLOT(handleReset()));
-    rightLayout->addWidget(resetButton);
-    rightLayout->setAlignment(resetButton, Qt::AlignCenter);
+    setupTitle(rightLayout, titleFontSize);
+    setupCountLabels(rightLayout, labelFontSize);
+    setupClassSelector(rightLayout, buttonFontSize);
+    setupResetButton(rightLayout, buttonFontSize);
     rightLayout->addStretch();
 
     auto* mainLayout = new QHBoxLayout(this);
@@ -81,6 +49,63 @@ ObjectDetectionGUI::ObjectDetectionGUI(DetectAndDraw* detector, QWidget* parent)
 
     setStyleSheet("background-color: black; color: white;");
 }
+
+void ObjectDetectionGUI::setupTitle(QVBoxLayout* layout, int fontSize) {
+    auto* titleLabel = new QLabel("OBJECT COUNTS", this);
+    titleLabel->setStyleSheet(QString("font-size: %1pt; font-weight: bold; color: blue;").arg(fontSize));
+    titleLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(titleLabel);
+    layout->addSpacing(15);
+}
+
+void ObjectDetectionGUI::setupCountLabels(QVBoxLayout* layout, int fontSize) {
+    QString classes[3] = {"Bear", "Frog", "Cola"};
+    for (int i = 0; i < 3; ++i) {
+        actualCountLabels[i] = new QLabel(QString("%1 Actual: 0").arg(classes[i]), this);
+        actualCountLabels[i]->setStyleSheet(QString("font-size: %1pt; color: cyan;").arg(fontSize));
+        actualCountLabels[i]->setAlignment(Qt::AlignCenter);
+        layout->addWidget(actualCountLabels[i]);
+    }
+
+    layout->addSpacing(30);
+
+    for (int i = 0; i < 3; ++i) {
+        totalCountLabels[i] = new QLabel(QString("%1 Total: 0").arg(classes[i]), this);
+        totalCountLabels[i]->setStyleSheet(QString("font-size: %1pt; color: lightblue;").arg(fontSize));
+        totalCountLabels[i]->setAlignment(Qt::AlignCenter);
+        layout->addWidget(totalCountLabels[i]);
+    }
+
+    layout->addSpacing(30);
+}
+
+void ObjectDetectionGUI::setupClassSelector(QVBoxLayout* layout, int fontSize) {
+    classSelector = new QComboBox(this);
+    classSelector->addItems({"Detect All", "Only Bears", "Only Frogs", "Only Colas"});
+    classSelector->setStyleSheet(QString("QComboBox { font-size: %1pt; color: white; background-color: black; }").arg(fontSize));
+
+    auto model = qobject_cast<QStandardItemModel*>(classSelector->model());
+    for (int i = 0; i < classSelector->count(); ++i) {
+        if (QStandardItem* item = model->item(i)) {
+            item->setTextAlignment(Qt::AlignCenter);
+        }
+    }
+
+    connect(classSelector, SIGNAL(currentIndexChanged(int)), this, SLOT(handleClassSelection(int)));
+    layout->addWidget(classSelector);
+    layout->setAlignment(classSelector, Qt::AlignCenter);
+    layout->addSpacing(30);
+}
+
+void ObjectDetectionGUI::setupResetButton(QVBoxLayout* layout, int fontSize) {
+    resetButton = new QPushButton("Reset Total Counts", this);
+    resetButton->setStyleSheet(QString("font-size: %1pt; padding: 6px; border: 2px solid white; color: white;").arg(fontSize));
+    resetButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    connect(resetButton, SIGNAL(clicked()), this, SLOT(handleReset()));
+    layout->addWidget(resetButton);
+    layout->setAlignment(resetButton, Qt::AlignCenter);
+}
+
 
 void ObjectDetectionGUI::updateFrame(const cv::Mat& frame) const {
     if (!frame.empty()) {
