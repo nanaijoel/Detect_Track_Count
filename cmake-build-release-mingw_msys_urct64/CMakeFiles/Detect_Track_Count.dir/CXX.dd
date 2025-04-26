@@ -1,0 +1,25 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/Detect_Track_Count.dir/src/main.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/Detect_and_Draw.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/ImageMode.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/CameraMode.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/GUI.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/TotalCounter.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/BYTETracker.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/KalmanFilter.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/lapjv.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/Object.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/Rect.cpp.obj: dyndep
+
+build CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/STrack.cpp.obj: dyndep
+

@@ -3,7 +3,6 @@
 #include <iostream>
 #include "ImageMode.h"
 #include "Detect_and_Draw.h"
-#include "GUI.h"
 
 
 namespace fs = std::filesystem;
@@ -22,6 +21,8 @@ void image_mode(DetectAndDraw& detector, const std::string& imgDirectory) {
         return;
     }
 
+    cv::namedWindow("YOLO Image Detection", cv::WINDOW_NORMAL);
+
     for (const auto& imagePath : imagePaths) {
         cv::Mat image = cv::imread(imagePath);
         if (image.empty()) {
@@ -34,13 +35,13 @@ void image_mode(DetectAndDraw& detector, const std::string& imgDirectory) {
         std::vector<int> all_classes = {0, 1, 2};
         std::vector<cv::Rect> boxes = detector.detect_objects(image, classIds, confidences, all_classes);
 
-
         std::cout << "Objects found: " << boxes.size() << std::endl;
         if (boxes.empty()) continue;
 
         DetectAndDraw::draw_detections(image, boxes, classIds);
 
-        cv::resize(image, image, cv::Size(1028, 960));
+        cv::resize(image, image, cv::Size(), 0.5, 0.5);
+
         cv::imshow("YOLO Image Detection", image);
 
         std::cout << "Press any key to continue or ESC to finish the program.\n";

@@ -1,0 +1,94 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "GNU",
+	"compiler-simulate-id" : "",
+	"config" : "Release",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64",
+	"dir-cur-src" : "C:/Users/joeln/CLionProjects/Detect_Track_Count",
+	"dir-top-bld" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64",
+	"dir-top-src" : "C:/Users/joeln/CLionProjects/Detect_Track_Count",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"C:\\Users\\joeln\\CLionProjects\\Detect_Track_Count\\include",
+		"C:\\Users\\joeln\\CLionProjects\\Detect_Track_Count\\src",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\opencv4",
+		"Detect_Track_Count_autogen\\include",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\eigen3",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\Qt6\\QtWidgets",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\Qt6",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\Qt6\\QtCore",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\share\\Qt6\\mkspecs\\win32-g++",
+		"C:\\Users\\joeln\\.vcpkg-clion\\vcpkg\\installed\\x64-mingw-dynamic\\include\\Qt6\\QtGui"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/Detect_Track_Count.dir",
+	"sources" : 
+	{
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/BYTETracker.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/BYTETracker.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/KalmanFilter.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/KalmanFilter.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/Object.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/Object.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/Rect.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/Rect.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/STrack.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/STrack.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/BYTETracker/lapjv.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/BYTETracker/lapjv.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/CameraMode.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/CameraMode.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/Detect_and_Draw.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/Detect_and_Draw.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/GUI.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/GUI.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/ImageMode.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/ImageMode.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/TotalCounter.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/TotalCounter.cpp"
+		},
+		"CMakeFiles/Detect_Track_Count.dir/src/main.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/joeln/CLionProjects/Detect_Track_Count/src/main.cpp"
+		}
+	}
+}

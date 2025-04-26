@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(Sweets_Tracker_and_Counter)
+project(Detect_Track_Count)
 
 
 set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
@@ -8,6 +8,11 @@ set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CAC
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-enum-enum-conversion")
+
+
+set(TIFF_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/x64-mingw-dynamic/include")
+set(TIFF_LIBRARY "${VCPKG_INSTALLED_DIR}/x64-mingw-dynamic/lib/libtiff.a")
+find_package(TIFF REQUIRED)
 
 
 set(OpenCV_DIR "$ENV{OpenCV_DIR}/share/opencv4")
@@ -56,10 +61,10 @@ set(HEADERS
 )
 
 
-add_executable(Sweets_Tracker_and_Counter ${SOURCES} ${HEADERS})
+add_executable(Detect_Track_Count ${SOURCES} ${HEADERS})
 
 
-target_link_libraries(Sweets_Tracker_and_Counter
+target_link_libraries(Detect_Track_Count
         ${OpenCV_LIBS}
         Eigen3::Eigen
         Qt6::Widgets

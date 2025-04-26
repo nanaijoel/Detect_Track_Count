@@ -1,0 +1,11 @@
+{
+"rules": [
+{
+"primary-output": "CMakeFiles/Detect_Track_Count.dir/src/CameraMode.cpp.o",
+"requires": [
+]
+}
+],
+"version": 0,
+"revision": 0
+}
