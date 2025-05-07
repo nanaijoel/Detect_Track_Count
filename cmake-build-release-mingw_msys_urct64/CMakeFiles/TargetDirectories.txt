@@ -1,5 +1,0 @@
-C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/Detect_Track_Count.dir
-C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/edit_cache.dir
-C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/rebuild_cache.dir
-C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/Detect_Track_Count_autogen_timestamp_deps.dir
-C:/Users/joeln/CLionProjects/Detect_Track_Count/cmake-build-release-mingw_msys_urct64/CMakeFiles/Detect_Track_Count_autogen.dir

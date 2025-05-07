@@ -1,9 +1,9 @@
 #ifndef OBJECT_DETECTION_GUI_H
 #define OBJECT_DETECTION_GUI_H
 
-//#include <QWidget>
-//#include <QHBoxLayout>
-//#include <QStandardItemModel>
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QStandardItemModel>
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>

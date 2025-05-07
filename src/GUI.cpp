@@ -1,7 +1,5 @@
-//#include <QHBoxLayout>
-//#include <QScreen>
-//#include <QStandardItemModel>
-//#include <QGuiApplication>
+#include <QHBoxLayout>
+#include <QGuiApplication>
 #include <QStandardItem>
 #include <QScreen>
 #include "GUI.h"
